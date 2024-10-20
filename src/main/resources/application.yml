@@ -1,21 +1,26 @@
+server:
+  port: ${SERVER_PORT:8081}
+
 spring:
   application:
     name: ms-order
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/msorderdb
-    username: postgres
-    password: admin
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_NAME:msorderdb}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
     jpa:
       hibernate:
         ddl-auto: update
-      show-sql: true
+      show-sql: ${SHOW_SQL:true}
+      open-in-view: false
       database-platform: org.hibernate.dialect.PostgreSQLDialect
+
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: msordermongodb
-server:
-  port: 8081
+      host: ${MONGODB_HOST:localhost}
+      port: ${MONGODB_PORT:27017}
+      database: ${MONGODB_NAME:msordermongodb}
+      auto-index-creation: true
 
