@@ -1,4 +1,4 @@
-create table "ORDER" (
+create table order_table (
 	ID SERIAL primary key,
 	CREATED_AT TIMESTAMP default CURRENT_TIMESTAMP not null,
 	UPDATED_AT TIMESTAMP default CURRENT_TIMESTAMP not null,
@@ -9,10 +9,10 @@ create table "ORDER" (
 	CLIENT_CPF VARCHAR (11) not null,
 	CLIENT_ADDRESS VARCHAR (255) not null,
 	CLIENT_POSTAL_CODE VARCHAR (8) not null,
-	CLIENT_CITY VARCHAR (255) not null,
-	CLIENT_STATE VARCHAR (255) not null
+	CLIENT_CITY VARCHAR (50) not null,
+	CLIENT_STATE VARCHAR (2) not null
 );
-create table "ITEM" (
+create table item_table (
 	ID SERIAL primary key,
 	ORDER_ID INTEGER not null,
 	CREATED_AT TIMESTAMP default CURRENT_TIMESTAMP not null,
@@ -23,5 +23,5 @@ create table "ITEM" (
 	UNITY_PRICE DECIMAL (10,2) not null,
 	COUNT INTEGER not null,
 
-	constraint FK_ORDER_ID foreign key (ORDER_ID) references "ORDER" (ID) on delete cascade
+	constraint FK_ORDER_ID foreign key (ORDER_ID) references "order_table" (ID) on delete cascade
 );
