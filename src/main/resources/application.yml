@@ -27,3 +27,18 @@ spring:
   flyway:
     enable: true
     baseline_on_migrate: false
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+mq:
+  queues:
+    create_order_queue: create_order_queue
+    update_order_queue: update_order_queue
+  exchanges:
+    order_exchange: order_exchange
+  routing-keys:
+    order_routing_key: order_routing_key
