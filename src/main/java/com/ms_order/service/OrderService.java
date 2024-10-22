@@ -6,6 +6,8 @@ import com.ms_order.model.dto.response.CreateOrderResponseDto;
 import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
+import com.ms_order.rabbitmq.CreateOrderPublisher;
+import com.ms_order.rabbitmq.dto.CreateOrderPublisherDto;
 import com.ms_order.repository.ItemRepository;
 import com.ms_order.repository.OrderRepository;
 import jakarta.transaction.Transactional;
@@ -20,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
+    private final CreateOrderPublisher createOrderPublisher;
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
     private final ModelMapper modelMapper;
@@ -52,6 +55,13 @@ public class OrderService {
                 .toList();
 
         orderResponse.setItems(orderItemResponse);
+
+        var createOrderEvent = CreateOrderPublisherDto.builder()
+                                                        .orderId(orderResponse.getId())
+                                                        .amount(orderResponse.getAmount())
+                                                    .build();
+
+        createOrderPublisher.createOrderPublisher(createOrderEvent);
 
         return orderResponse;
     }
