@@ -21,9 +21,13 @@ public class CreateOrderPublisher {
     @Value("${mq.exchanges.order_exchange}")
     private String orderExchange;
 
+    @Value("${mq.routing-keys.order_routing_key}")
+    private String orderRoutingKey;
+
+
     public void createOrderPublisher(CreateOrderPublisherDto dto) {
         var stringOrder = convertObjectToString(dto);
-        rabbitTemplate.convertAndSend(orderExchange, createOrderQueue.getName(), stringOrder);
+        rabbitTemplate.convertAndSend(orderExchange, orderRoutingKey, stringOrder);
     }
 
     public String convertObjectToString(CreateOrderPublisherDto dto) {
