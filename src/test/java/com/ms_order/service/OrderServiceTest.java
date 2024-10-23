@@ -1,0 +1,91 @@
+package com.ms_order.service;
+
+import com.ms_order.fixure.*;
+import com.ms_order.model.dto.request.CreateOrderRequestDto;
+import com.ms_order.model.dto.request.OrderItemDto;
+import com.ms_order.model.dto.response.CreateOrderResponseDto;
+import com.ms_order.model.entity.ItemEntity;
+import com.ms_order.model.entity.OrderEntity;
+import com.ms_order.model.enums.OrderStatusEnum;
+import com.ms_order.rabbitmq.CreateOrderPublisher;
+import com.ms_order.rabbitmq.dto.OrderCreatedDto;
+import com.ms_order.repository.ItemRepository;
+import com.ms_order.repository.OrderRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class OrderServiceTest {
+
+    private OrderService orderService;
+
+    @Mock
+    private CreateOrderPublisher createOrderPublisher;
+    @Mock
+    private OrderRepository orderRepository;
+    @Mock
+    private ItemRepository itemRepository;
+    @Mock
+    private ModelMapper modelMapper;
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+    @Captor
+    private ArgumentCaptor<OrderCreatedDto> orderCreatedDtoCaptor;
+    @Captor
+    private ArgumentCaptor<OrderEntity> orderEntityCaptor;
+
+    @BeforeEach
+    void setUp(){
+        orderService = new OrderService(createOrderPublisher, orderRepository, itemRepository, modelMapper);
+    }
+
+    @Test
+    void shouldCreateOrderSuccessful(){
+
+        var itemDto1 = OrdemItemDtoFixure.buildDefault(2, BigDecimal.valueOf(100.00));
+        var itemDto2 = OrdemItemDtoFixure.buildDefault(1, BigDecimal.valueOf(50.00));
+        var requestDto = CreateOrderRequestDtoFixure.buildDefault(List.of(itemDto1, itemDto2));
+        var orderEntity = OrderEntityFixure.buildDefault(requestDto);
+        var itemEntity = ItemEntityFixure.buildDefault(requestDto);
+        var responseDto = CreateOrderResponseDtoFixure.buildDefault(orderEntity, List.of(itemDto1, itemDto2));
+
+        when(modelMapper.map(requestDto, OrderEntity.class)).thenReturn(orderEntity);
+        when(orderRepository.save(orderEntityCaptor.capture()))
+            .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
+        when(modelMapper.map(itemDto1, ItemEntity.class)).thenReturn(itemEntity.getFirst());
+        when(modelMapper.map(itemDto2, ItemEntity.class)).thenReturn(itemEntity.get(1));
+        when(itemRepository.saveAll(itemEntity)).thenReturn(itemEntity);
+        when(modelMapper.map(any(OrderEntity.class), eq(CreateOrderResponseDto.class))).thenReturn(responseDto);
+        when(modelMapper.map(itemEntity.getFirst(), OrderItemDto.class)).thenReturn(itemDto1);
+        when(modelMapper.map(itemEntity.get(1), OrderItemDto.class)).thenReturn(itemDto2);
+//        doNothing().when(rabbitTemplate).convertAndSend(anyString(), anyString(), any(OrderCreatedDto.class));
+
+        var response = orderService.createOrder(requestDto);
+
+        verify(createOrderPublisher, times(1))
+                .send(orderCreatedDtoCaptor.capture());
+
+        assertThat(response).isNotNull();
+        assertThat(response).isInstanceOf(CreateOrderResponseDto.class);
+        assertThat(orderEntityCaptor.getValue().getStatus()).isEqualTo(OrderStatusEnum.CREATED);
+        assertThat(orderEntityCaptor.getValue().getAmount()).isEqualTo(BigDecimal.valueOf(250.00));
+        assertThat(response.getItems()).hasSize(2);
+        assertThat(orderCreatedDtoCaptor.getValue().getOrderId()).isEqualTo(orderEntityCaptor.getValue().getId());
+        assertThat(orderCreatedDtoCaptor.getValue().getAmount()).isEqualTo(orderEntityCaptor.getValue().getAmount());
+
+
+    }
+}

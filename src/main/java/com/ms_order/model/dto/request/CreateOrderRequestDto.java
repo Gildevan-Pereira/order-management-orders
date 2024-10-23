@@ -26,4 +26,5 @@ public class CreateOrderRequestDto {
     private String state;
 
     private List<OrderItemDto> items;
+
 }

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateOrderPublisherDto {
+public class OrderCreatedDto {
 
     private Integer orderId;
     private BigDecimal amount;

@@ -7,7 +7,7 @@ import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
 import com.ms_order.rabbitmq.CreateOrderPublisher;
-import com.ms_order.rabbitmq.dto.CreateOrderPublisherDto;
+import com.ms_order.rabbitmq.dto.OrderCreatedDto;
 import com.ms_order.repository.ItemRepository;
 import com.ms_order.repository.OrderRepository;
 import jakarta.transaction.Transactional;
@@ -56,12 +56,12 @@ public class OrderService {
 
         orderResponse.setItems(orderItemResponse);
 
-        var createOrderEvent = CreateOrderPublisherDto.builder()
-                                                        .orderId(orderResponse.getId())
-                                                        .amount(orderResponse.getAmount())
-                                                    .build();
+        var createOrderEvent = OrderCreatedDto.builder()
+                                    .orderId(orderSaved.getId())
+                                    .amount(orderSaved.getAmount())
+                                    .build();
 
-        createOrderPublisher.createOrderPublisher(createOrderEvent);
+        createOrderPublisher.send(createOrderEvent);
 
         return orderResponse;
     }
