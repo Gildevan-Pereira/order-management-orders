@@ -1,7 +1,6 @@
 package com.ms_order.service;
 
 import com.ms_order.fixure.*;
-import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.dto.response.CreateOrderResponseDto;
 import com.ms_order.model.entity.ItemEntity;

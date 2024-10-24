@@ -1,7 +1,6 @@
 package com.ms_order.model.mongodb;
 
 
-import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.enums.OrderStatusEnum;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;

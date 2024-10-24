@@ -73,7 +73,7 @@ public class OrderService {
         orderHistory.setId(null);
         orderHistory.setCreatedAt(LocalDateTime.now());
 
-        var historySaved = ordemHistoryRepository.save(orderHistory);
+        ordemHistoryRepository.save(orderHistory);
 
         return orderResponse;
     }
