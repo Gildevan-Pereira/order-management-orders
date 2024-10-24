@@ -1,5 +1,8 @@
 package com.ms_order.rabbitmq;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ms_order.exception.ErrorToParseStringException;
 import com.ms_order.rabbitmq.dto.OrderCreatedDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
 public class CreateOrderPublisher {
 
     private final RabbitTemplate rabbitTemplate;
+    private final ObjectMapper objectMapper;
 
     @Value("${mq.exchanges.order_exchange}")
     private String orderExchange;
@@ -23,9 +27,18 @@ public class CreateOrderPublisher {
 
     public void send(OrderCreatedDto dto) {
         try {
-            rabbitTemplate.convertAndSend(orderExchange, orderRoutingKey, dto);
+            var converted = convertObjectToString(dto);
+            rabbitTemplate.convertAndSend(orderExchange, orderRoutingKey, converted);
         } catch (AmqpException e) {
             log.error("CreateOrderPublisher.send - Error while sending message", e);
+        }
+    }
+
+    public String convertObjectToString(OrderCreatedDto dto) {
+        try {
+            return objectMapper.writeValueAsString(dto);
+        } catch (JsonProcessingException e) {
+            throw new ErrorToParseStringException(e.getMessage());
         }
     }
 
