@@ -1,16 +1,15 @@
 package com.ms_order.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "item_table")
 @SuperBuilder
@@ -23,7 +22,8 @@ public class ItemEntity extends BaseEntity {
     private Integer id;
 
     @JoinColumn(name = "order_id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("order")
+    @ManyToOne(fetch = FetchType.LAZY)
     private OrderEntity order;
 
     private String name;

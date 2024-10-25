@@ -78,4 +78,8 @@ public class OrderService {
         return orderResponse;
     }
 
+    public CreateOrderResponseDto findById(Integer id) {
+        var searchReturn = orderRepository.findById(id);
+        return modelMapper.map(searchReturn, CreateOrderResponseDto.class);
+    }
 }

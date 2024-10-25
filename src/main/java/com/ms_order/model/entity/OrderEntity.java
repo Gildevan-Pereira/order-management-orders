@@ -2,16 +2,15 @@ package com.ms_order.model.entity;
 
 import com.ms_order.model.enums.OrderStatusEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 @Entity
 @SuperBuilder
 @Table(name = "order_table")
@@ -45,4 +44,8 @@ public class OrderEntity extends BaseEntity {
 
     @Column(name = "client_state")
     private String state;
+
+    @OneToMany
+    @JoinColumn(name = "order_id")
+    private List<ItemEntity> items;
 }
