@@ -2,6 +2,8 @@ package com.ms_order.model.mongodb;
 
 
 import com.ms_order.model.enums.OrderStatusEnum;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +23,7 @@ import java.util.List;
 public class OrderHistoryEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
     private Integer orderId;
     private LocalDateTime createdAt;

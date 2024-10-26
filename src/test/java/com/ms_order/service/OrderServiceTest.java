@@ -10,7 +10,7 @@ import com.ms_order.model.mongodb.OrderHistoryEntity;
 import com.ms_order.rabbitmq.CreateOrderPublisher;
 import com.ms_order.rabbitmq.dto.OrderCreatedDto;
 import com.ms_order.repository.ItemRepository;
-import com.ms_order.repository.OrdemHistoryRepository;
+import com.ms_order.repository.OrderHistoryRepository;
 import com.ms_order.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class OrderServiceTest {
     private OrderService orderService;
 
     @Mock
-    private OrdemHistoryRepository ordemHistoryRepository;
+    private OrderHistoryRepository ordemHistoryRepository;
     @Mock
     private CreateOrderPublisher createOrderPublisher;
     @Mock

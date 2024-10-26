@@ -1,6 +1,5 @@
 package com.ms_order.service;
 
-import com.ms_order.model.builder.OrderHistoryEntityBuilder;
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.dto.response.CreateOrderResponseDto;
@@ -11,11 +10,14 @@ import com.ms_order.model.mongodb.OrderHistoryEntity;
 import com.ms_order.rabbitmq.CreateOrderPublisher;
 import com.ms_order.rabbitmq.dto.OrderCreatedDto;
 import com.ms_order.repository.ItemRepository;
-import com.ms_order.repository.OrdemHistoryRepository;
+import com.ms_order.repository.OrderHistoryRepository;
 import com.ms_order.repository.OrderRepository;
+import com.ms_order.specification.OrderSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final OrdemHistoryRepository ordemHistoryRepository;
+    private final OrderHistoryRepository ordemHistoryRepository;
     private final CreateOrderPublisher createOrderPublisher;
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
@@ -68,7 +70,6 @@ public class OrderService {
 
         createOrderPublisher.send(createOrderEvent);
 
-//        OrderHistoryEntity orderHistory = OrderHistoryEntityBuilder.build(orderResponse);
         OrderHistoryEntity orderHistory = modelMapper.map(orderResponse, OrderHistoryEntity.class);
         orderHistory.setId(null);
         orderHistory.setCreatedAt(LocalDateTime.now());
@@ -82,4 +83,13 @@ public class OrderService {
         var searchReturn = orderRepository.findById(id);
         return modelMapper.map(searchReturn, CreateOrderResponseDto.class);
     }
+
+    public Page<CreateOrderResponseDto> findByFilter(LocalDateTime createdAt, BigDecimal amount,
+                                                     OrderStatusEnum status, String name,
+                                                     String cpf, String city, String state, Pageable pageable) {
+
+        var searchReturn = orderRepository.findAll(OrderSpecification.filterTo(createdAt, amount, status, name, cpf, city, state), pageable);
+        return searchReturn.map(CreateOrderResponseDto::fromEntity);
+    }
+
 }
