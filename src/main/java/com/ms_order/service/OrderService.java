@@ -2,10 +2,12 @@ package com.ms_order.service;
 
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderItemDto;
+import com.ms_order.model.dto.request.OrderSearchFilterDto;
 import com.ms_order.model.dto.response.CreateOrderResponseDto;
 import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
+import com.ms_order.model.mongodb.ItemHistoryEntity;
 import com.ms_order.model.mongodb.OrderHistoryEntity;
 import com.ms_order.rabbitmq.CreateOrderPublisher;
 import com.ms_order.rabbitmq.dto.OrderCreatedDto;
@@ -15,8 +17,10 @@ import com.ms_order.repository.OrderRepository;
 import com.ms_order.specification.OrderSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +28,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderHistoryRepository ordemHistoryRepository;
+    private final OrderHistoryRepository orderHistoryRepository;
     private final CreateOrderPublisher createOrderPublisher;
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
@@ -47,14 +52,17 @@ public class OrderService {
         orderEntity.setAmount(amount);
 
         var orderSaved = orderRepository.save(orderEntity);
+        log.info("OrderService.createOrder - Order created successful | orderId: {}", orderSaved.getId());
 
         List<ItemEntity> items = requestDto.getItems().stream()
                 .map(item -> modelMapper.map(item, ItemEntity.class))
                 .toList();
 
-        items.forEach(item -> item.setOrder(orderSaved));
+        items.forEach(item -> item.setOrder(orderSaved.getId()));
 
         var itemsSaved = itemRepository.saveAll(items);
+        log.info("OrderService.createOrder - Order items created successful | orderId: {} | count: {}",
+                orderSaved.getId(), items.size());
 
         var orderResponse = modelMapper.map(orderSaved, CreateOrderResponseDto.class);
         var orderItemResponse = itemsSaved.stream()
@@ -70,26 +78,33 @@ public class OrderService {
 
         createOrderPublisher.send(createOrderEvent);
 
-        OrderHistoryEntity orderHistory = modelMapper.map(orderResponse, OrderHistoryEntity.class);
-        orderHistory.setId(null);
-        orderHistory.setCreatedAt(LocalDateTime.now());
 
-        ordemHistoryRepository.save(orderHistory);
+        OrderHistoryEntity orderHistory = modelMapper.map(orderSaved, OrderHistoryEntity.class);
+        var itemHistory = itemsSaved.stream()
+                .map(itemEntity -> modelMapper.map(itemEntity, ItemHistoryEntity.class))
+                .toList();
+        orderHistory.setHistoryCreatedAt(LocalDateTime.now());
+        orderHistory.setItems(itemHistory);
+
+        var orderHistorySaved = orderHistoryRepository.save(orderHistory);
+        log.info("OrderService.createOrder - Order history created successful | orderId: {} | orderHistoryId: {}",
+                orderSaved.getId(), orderHistorySaved.getUuid());
 
         return orderResponse;
     }
 
     public CreateOrderResponseDto findById(Integer id) {
-        var searchReturn = orderRepository.findById(id);
-        return modelMapper.map(searchReturn, CreateOrderResponseDto.class);
+//        TODO: Lançar exceção para optional vazio
+        var order = orderRepository.findById(id);
+        return modelMapper.map(order, CreateOrderResponseDto.class);
     }
 
-    public Page<CreateOrderResponseDto> findByFilter(LocalDateTime createdAt, BigDecimal amount,
-                                                     OrderStatusEnum status, String name,
-                                                     String cpf, String city, String state, Pageable pageable) {
-
-        var searchReturn = orderRepository.findAll(OrderSpecification.filterTo(createdAt, amount, status, name, cpf, city, state), pageable);
-        return searchReturn.map(CreateOrderResponseDto::fromEntity);
+//    TODO: Capturar exceção MethodArgumentNotValidException para o campo de status
+    public Page<CreateOrderResponseDto> findByFilters(OrderSearchFilterDto filterDto, Pageable pageable) {
+        var ordersPage = orderRepository.findAll(OrderSpecification.filterTo(filterDto), pageable);
+        var orders = ordersPage.getContent().stream()
+                .map(order -> modelMapper.map(order, CreateOrderResponseDto.class)).toList();
+        return new PageImpl<>(orders, pageable, ordersPage.getTotalElements());
     }
 
 }

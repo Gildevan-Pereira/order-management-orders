@@ -1,47 +1,52 @@
 package com.ms_order.specification;
 
+import com.ms_order.model.dto.request.OrderSearchFilterDto;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderSpecification {
-    public static Specification<OrderEntity> filterTo(LocalDateTime createdAt, BigDecimal amount,
-                                                      OrderStatusEnum status, String name,
-                                                      String cpf, String city, String state) {
+    public static Specification<OrderEntity> filterTo(OrderSearchFilterDto filterDto) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (createdAt != null) {
-                predicates.add(criteriaBuilder.equal(root.get("created_at"), createdAt));
+//          TODO: Criar validação para o dto
+//          TODO: Adicionar filtro por IDs
+
+            if (filterDto.getStartDate() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), filterDto.getStartDate()));
             }
-            if (amount != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("amount"), amount));
+            if (filterDto.getEndDate() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"),  filterDto.getEndDate().atTime(23, 59, 59)));
             }
-            if (amount != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("amount"), amount));
+            if (filterDto.getMinAmount() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("amount"), filterDto.getMinAmount()));
             }
-            if (status != null) {
-                predicates.add(criteriaBuilder.equal(root.get("status"), status));
+            if (filterDto.getMaxAmount() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("amount"), filterDto.getMaxAmount()));
             }
-            if (name != null && !name.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("name"), "%" + name + "%"));
+            if (filterDto.getStatus() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), OrderStatusEnum.fromName(filterDto.getStatus())));
             }
-            if (cpf != null && !cpf.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("cpf"), cpf));
+            if (StringUtils.hasText(filterDto.getName())) {
+                predicates.add(criteriaBuilder.like(root.get("name"), "%" + filterDto.getName() + "%"));
             }
-            if (city != null && !city.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("city"), "%" + city + "%"));
+            if (StringUtils.hasText(filterDto.getCpf())) {
+                predicates.add(criteriaBuilder.equal(root.get("cpf"), filterDto.getCpf()));
             }
-            if (state != null && !state.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("state"), state));
+            if (StringUtils.hasText(filterDto.getCity())) {
+                predicates.add(criteriaBuilder.like(root.get("city"), "%" + filterDto.getCity() + "%"));
+            }
+            if (StringUtils.hasText(filterDto.getState())) {
+                predicates.add(criteriaBuilder.equal(root.get("state"), filterDto.getState()));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
+
 }

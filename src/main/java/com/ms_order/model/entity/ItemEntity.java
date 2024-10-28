@@ -1,13 +1,14 @@
 package com.ms_order.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
-@EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
 @Entity
@@ -21,10 +22,8 @@ public class ItemEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JoinColumn(name = "order_id")
-    @JsonIgnoreProperties("order")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private OrderEntity order;
+    @Column(name = "order_id")
+    private Integer order;
 
     private String name;
 

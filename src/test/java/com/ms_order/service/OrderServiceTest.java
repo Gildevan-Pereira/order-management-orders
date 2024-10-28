@@ -6,6 +6,7 @@ import com.ms_order.model.dto.response.CreateOrderResponseDto;
 import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
+import com.ms_order.model.mongodb.ItemHistoryEntity;
 import com.ms_order.model.mongodb.OrderHistoryEntity;
 import com.ms_order.rabbitmq.CreateOrderPublisher;
 import com.ms_order.rabbitmq.dto.OrderCreatedDto;
@@ -65,9 +66,12 @@ class OrderServiceTest {
         var requestDto = CreateOrderRequestDtoFixure.buildDefault(List.of(itemDto1, itemDto2));
         var orderEntity = OrderEntityFixure.buildDefault(requestDto);
         var itemEntity = ItemEntityFixure.buildDefault(requestDto);
+
         var responseDto = CreateOrderResponseDtoFixure.buildDefault(orderEntity, List.of(itemDto1, itemDto2));
         var orderHistory = OrderHistoryEntityFixure.buildeDefault(responseDto);
-
+        var itemHistory = ItemHistoryEntityFixure.buildDefault(itemEntity);
+        var itemHistory1 = itemHistory.getFirst();
+        var itemHistory2 = itemHistory.getLast();
         when(modelMapper.map(requestDto, OrderEntity.class)).thenReturn(orderEntity);
         when(orderRepository.save(orderEntityCaptor.capture()))
             .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
@@ -77,9 +81,10 @@ class OrderServiceTest {
         when(modelMapper.map(any(OrderEntity.class), eq(CreateOrderResponseDto.class))).thenReturn(responseDto);
         when(modelMapper.map(itemEntity.getFirst(), OrderItemDto.class)).thenReturn(itemDto1);
         when(modelMapper.map(itemEntity.get(1), OrderItemDto.class)).thenReturn(itemDto2);
-        when(modelMapper.map(responseDto, OrderHistoryEntity.class)).thenReturn(orderHistory);
+        when(modelMapper.map(orderEntity, OrderHistoryEntity.class)).thenReturn(orderHistory);
+        when(modelMapper.map(itemEntity.getFirst(), ItemHistoryEntity.class)).thenReturn(itemHistory1);
+        when(modelMapper.map(itemEntity.getLast(), ItemHistoryEntity.class)).thenReturn(itemHistory2);
         when(ordemHistoryRepository.save(orderHistoryEntityCaptor.capture())).thenReturn(orderHistory);
-//        doNothing().when(rabbitTemplate).convertAndSend(anyString(), anyString(), any(OrderCreatedDto.class));
 
         var response = orderService.createOrder(requestDto);
 
@@ -95,6 +100,7 @@ class OrderServiceTest {
         assertThat(orderCreatedDtoCaptor.getValue().getAmount()).isEqualTo(orderEntityCaptor.getValue().getAmount());
         assertThat(orderHistoryEntityCaptor.getValue().getId()).isNull();
         assertThat(orderHistoryEntityCaptor.getValue().getCreatedAt()).isNotNull();
+        assertThat(orderHistoryEntityCaptor.getValue().getItems()).isNotNull();
 
     }
 }
