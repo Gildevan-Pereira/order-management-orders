@@ -30,7 +30,7 @@ public class OrderHistoryEntity {
     private String uuid;
     private Integer orderId;
     private LocalDateTime createdAt;
-//    TODO: Corrigir para inserir data automaticamente
+
     @CreatedDate
     private LocalDateTime historyCreatedAt;
     private BigDecimal amount;

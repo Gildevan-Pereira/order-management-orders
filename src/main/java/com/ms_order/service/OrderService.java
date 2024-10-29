@@ -98,17 +98,20 @@ public class OrderService {
     public CreateOrderResponseDto findById(Integer id) {
         var order = Optional.ofNullable(orderRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Order not find for id: " + id)));
+        log.info("OrderService.findById - Order request found | id: {}", id);
         return modelMapper.map(order, CreateOrderResponseDto.class);
     }
 
-//    TODO: Capturar exceção MethodArgumentNotValidException para o campo de status
     public Page<CreateOrderResponseDto> findByFilters(OrderSearchFilterDto filterDto, Pageable pageable) {
+
+        log.info("OrderService.findByFilters - Filter order request received | : {}", filterDto);
 
         if (!OrderStatusEnum.isValid(filterDto.getStatus())) {
             throw new BusinessException("Invalid status given. Accepted values: " + OrderStatusEnum.getAcceptedValues());
         }
 
         var ordersPage = orderRepository.findAll(OrderSpecification.filterTo(filterDto), pageable);
+        log.info("OrderService.findByFilters - Orders found for this filters | count: {}", ordersPage.getSize());
         var orders = ordersPage.getContent().stream()
                 .map(order -> modelMapper.map(order, CreateOrderResponseDto.class)).toList();
         return new PageImpl<>(orders, pageable, ordersPage.getTotalElements());
