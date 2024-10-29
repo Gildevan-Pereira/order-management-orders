@@ -1,5 +1,6 @@
 package com.ms_order.service;
 
+import com.ms_order.exception.BusinessException;
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
@@ -22,11 +23,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -78,12 +82,10 @@ public class OrderService {
 
         createOrderPublisher.send(createOrderEvent);
 
-
         OrderHistoryEntity orderHistory = modelMapper.map(orderSaved, OrderHistoryEntity.class);
         var itemHistory = itemsSaved.stream()
                 .map(itemEntity -> modelMapper.map(itemEntity, ItemHistoryEntity.class))
                 .toList();
-        orderHistory.setHistoryCreatedAt(LocalDateTime.now());
         orderHistory.setItems(itemHistory);
 
         var orderHistorySaved = orderHistoryRepository.save(orderHistory);
@@ -94,13 +96,18 @@ public class OrderService {
     }
 
     public CreateOrderResponseDto findById(Integer id) {
-//        TODO: Lançar exceção para optional vazio
-        var order = orderRepository.findById(id);
+        var order = Optional.ofNullable(orderRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Order not find for id: " + id)));
         return modelMapper.map(order, CreateOrderResponseDto.class);
     }
 
 //    TODO: Capturar exceção MethodArgumentNotValidException para o campo de status
     public Page<CreateOrderResponseDto> findByFilters(OrderSearchFilterDto filterDto, Pageable pageable) {
+
+        if (!OrderStatusEnum.isValid(filterDto.getStatus())) {
+            throw new BusinessException("Invalid status given. Accepted values: " + OrderStatusEnum.getAcceptedValues());
+        }
+
         var ordersPage = orderRepository.findAll(OrderSpecification.filterTo(filterDto), pageable);
         var orders = ordersPage.getContent().stream()
                 .map(order -> modelMapper.map(order, CreateOrderResponseDto.class)).toList();
