@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -37,9 +36,9 @@ public class OrderController {
     }
 
     @GetMapping
-    public Page<CreateOrderResponseDto> findByFilter(@Valid OrderSearchFilterDto filterDto, Pageable pageable) {
+    public ResponseEntity<Page<CreateOrderResponseDto>> findByFilter(@Valid OrderSearchFilterDto filterDto, Pageable pageable) {
         log.info("OrderController.findByFilters - Request received | requestDto: {}", filterDto);
-        return orderService.findByFilters(filterDto, pageable);
+        return ResponseEntity.ok(orderService.findByFilters(filterDto, pageable));
     }
 
 }

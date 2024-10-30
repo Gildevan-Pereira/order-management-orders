@@ -1,0 +1,1 @@
+alter table order_table add column attempted_payment_at timestamp default null;

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemHistoryEntity {
+public class ItemHistoryDocument {
 
     private String name;
 

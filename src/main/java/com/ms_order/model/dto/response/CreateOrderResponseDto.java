@@ -38,6 +38,8 @@ public class CreateOrderResponseDto {
 
     private String state;
 
+    private LocalDateTime attemptedPaymentAt;
+
     private List<OrderItemDto> items;
 
 }

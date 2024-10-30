@@ -6,8 +6,8 @@ import com.ms_order.model.dto.response.CreateOrderResponseDto;
 import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
-import com.ms_order.model.mongodb.ItemHistoryEntity;
-import com.ms_order.model.mongodb.OrderHistoryEntity;
+import com.ms_order.model.mongodb.ItemHistoryDocument;
+import com.ms_order.model.mongodb.OrderHistoryDocument;
 import com.ms_order.rabbitmq.CreateOrderPublisher;
 import com.ms_order.rabbitmq.dto.OrderCreatedDto;
 import com.ms_order.repository.ItemRepository;
@@ -51,7 +51,7 @@ class OrderServiceTest {
     @Captor
     private ArgumentCaptor<OrderEntity> orderEntityCaptor;
     @Captor
-    private ArgumentCaptor<OrderHistoryEntity> orderHistoryEntityCaptor;
+    private ArgumentCaptor<OrderHistoryDocument> orderHistoryEntityCaptor;
 
     @BeforeEach
     void setUp(){
@@ -81,9 +81,9 @@ class OrderServiceTest {
         when(modelMapper.map(any(OrderEntity.class), eq(CreateOrderResponseDto.class))).thenReturn(responseDto);
         when(modelMapper.map(itemEntity.getFirst(), OrderItemDto.class)).thenReturn(itemDto1);
         when(modelMapper.map(itemEntity.get(1), OrderItemDto.class)).thenReturn(itemDto2);
-        when(modelMapper.map(orderEntity, OrderHistoryEntity.class)).thenReturn(orderHistory);
-        when(modelMapper.map(itemEntity.getFirst(), ItemHistoryEntity.class)).thenReturn(itemHistory1);
-        when(modelMapper.map(itemEntity.getLast(), ItemHistoryEntity.class)).thenReturn(itemHistory2);
+        when(modelMapper.map(orderEntity, OrderHistoryDocument.class)).thenReturn(orderHistory);
+        when(modelMapper.map(itemEntity.getFirst(), ItemHistoryDocument.class)).thenReturn(itemHistory1);
+        when(modelMapper.map(itemEntity.getLast(), ItemHistoryDocument.class)).thenReturn(itemHistory2);
         when(ordemHistoryRepository.save(orderHistoryEntityCaptor.capture())).thenReturn(orderHistory);
 
         var response = orderService.createOrder(requestDto);

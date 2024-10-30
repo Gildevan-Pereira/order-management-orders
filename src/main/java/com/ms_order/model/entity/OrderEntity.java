@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -43,6 +44,9 @@ public class OrderEntity extends BaseEntity {
 
     @Column(name = "client_state")
     private String state;
+
+    @Column(name = "attempted_payment_at")
+    private LocalDateTime attemptedPaymentAt;
 
     @OneToMany
     @JoinColumn(name = "order_id")

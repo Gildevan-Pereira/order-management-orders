@@ -9,6 +9,7 @@ public class UpdateOrderListener {
 
     @RabbitListener(queues = "${mq.queues.update_order_queue}")
     public void updateOrderListener(@Payload String payload) {
+
         System.out.println(payload);
     }
 }

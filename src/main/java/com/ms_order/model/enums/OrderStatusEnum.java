@@ -1,10 +1,9 @@
 package com.ms_order.model.enums;
 
 import com.ms_order.exception.BusinessException;
+import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public enum OrderStatusEnum {
     CREATED,
@@ -17,19 +16,10 @@ public enum OrderStatusEnum {
                 return statusEnum;
             }
         }
-        throw new BusinessException("Invalid status given. Accepted values: " + List.of(OrderStatusEnum.values()));
+        throw new BusinessException(
+                "Invalid status given. Accepted values: " + List.of(OrderStatusEnum.values()),
+                "1000",
+                HttpStatus.BAD_REQUEST);
     }
-
-    public static boolean isValid(String value) {
-        return Arrays.stream(OrderStatusEnum.values())
-                .anyMatch(status -> status.name().equalsIgnoreCase(value));
-    }
-
-    public static String getAcceptedValues() {
-        return Arrays.stream(OrderStatusEnum.values())
-                .map(OrderStatusEnum::name)
-                .collect(Collectors.joining(", "));
-    }
-
 
 }

@@ -2,20 +2,20 @@ package com.ms_order.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ms_order.exception.BusinessException;
+import com.ms_order.exception.InternalException;
 import com.ms_order.rabbitmq.dto.OrderCreatedDto;
+import org.springframework.http.HttpStatus;
 
-public class ConvertJson {
+public class JsonParserUtil {
 
-
-    public static String convertObjectToString(OrderCreatedDto dto) {
+    public static String toJson(Object obj) {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            return objectMapper.writeValueAsString(dto);
+            return objectMapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
-            throw new BusinessException(e.getMessage(), e.getCause());
+           throw new InternalException("An error has ocurred", "0002", HttpStatus.BAD_GATEWAY);
         }
     }
 }

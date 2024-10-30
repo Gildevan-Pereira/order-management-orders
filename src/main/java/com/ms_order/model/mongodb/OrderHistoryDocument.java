@@ -3,8 +3,6 @@ package com.ms_order.model.mongodb;
 
 import com.ms_order.model.enums.OrderStatusEnum;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,15 +22,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "order_history")
-public class OrderHistoryEntity {
+public class OrderHistoryDocument {
 
     @Id
     private String uuid;
+
     private Integer orderId;
     private LocalDateTime createdAt;
 
     @CreatedDate
     private LocalDateTime historyCreatedAt;
+
     private BigDecimal amount;
     private OrderStatusEnum status;
     private String name;
@@ -41,5 +41,6 @@ public class OrderHistoryEntity {
     private String postalCode;
     private String city;
     private String state;
-    private List<ItemHistoryEntity> items;
+    private LocalDateTime attemptedPaymentAt;
+    private List<ItemHistoryDocument> items;
 }

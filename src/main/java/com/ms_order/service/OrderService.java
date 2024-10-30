@@ -8,10 +8,11 @@ import com.ms_order.model.dto.response.CreateOrderResponseDto;
 import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
-import com.ms_order.model.mongodb.ItemHistoryEntity;
-import com.ms_order.model.mongodb.OrderHistoryEntity;
+import com.ms_order.model.mongodb.ItemHistoryDocument;
+import com.ms_order.model.mongodb.OrderHistoryDocument;
 import com.ms_order.rabbitmq.CreateOrderPublisher;
 import com.ms_order.rabbitmq.dto.OrderCreatedDto;
+import com.ms_order.rabbitmq.dto.OrderUpdatedDto;
 import com.ms_order.repository.ItemRepository;
 import com.ms_order.repository.OrderHistoryRepository;
 import com.ms_order.repository.OrderRepository;
@@ -25,12 +26,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -82,9 +80,9 @@ public class OrderService {
 
         createOrderPublisher.send(createOrderEvent);
 
-        OrderHistoryEntity orderHistory = modelMapper.map(orderSaved, OrderHistoryEntity.class);
+        OrderHistoryDocument orderHistory = modelMapper.map(orderSaved, OrderHistoryDocument.class);
         var itemHistory = itemsSaved.stream()
-                .map(itemEntity -> modelMapper.map(itemEntity, ItemHistoryEntity.class))
+                .map(itemEntity -> modelMapper.map(itemEntity, ItemHistoryDocument.class))
                 .toList();
         orderHistory.setItems(itemHistory);
 
@@ -96,25 +94,45 @@ public class OrderService {
     }
 
     public CreateOrderResponseDto findById(Integer id) {
-        var order = Optional.ofNullable(orderRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Order not find for id: " + id)));
+        var order = orderRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Order not find for id: " + id, "1001", HttpStatus.BAD_REQUEST));
         log.info("OrderService.findById - Order request found | id: {}", id);
         return modelMapper.map(order, CreateOrderResponseDto.class);
     }
 
     public Page<CreateOrderResponseDto> findByFilters(OrderSearchFilterDto filterDto, Pageable pageable) {
+        log.info("OrderService.findByFilters - Filter order request received | filters: {}", filterDto);
 
-        log.info("OrderService.findByFilters - Filter order request received | : {}", filterDto);
-
-        if (!OrderStatusEnum.isValid(filterDto.getStatus())) {
-            throw new BusinessException("Invalid status given. Accepted values: " + OrderStatusEnum.getAcceptedValues());
-        }
+        OrderStatusEnum.fromName(filterDto.getStatus());
 
         var ordersPage = orderRepository.findAll(OrderSpecification.filterTo(filterDto), pageable);
-        log.info("OrderService.findByFilters - Orders found for this filters | count: {}", ordersPage.getSize());
+        log.info("OrderService.findByFilters - Orders found for filters | count: {}", ordersPage.getTotalElements());
         var orders = ordersPage.getContent().stream()
                 .map(order -> modelMapper.map(order, CreateOrderResponseDto.class)).toList();
         return new PageImpl<>(orders, pageable, ordersPage.getTotalElements());
+    }
+
+    @Transactional
+    public void updateOrder(OrderUpdatedDto updatedDto) {
+
+        var status = OrderStatusEnum.fromName(updatedDto.getStatus());
+
+        var order = orderRepository.findById(updatedDto.getOrderId())
+                .orElseThrow(() -> new BusinessException(
+                        "Order not find for id: " + updatedDto.getOrderId(),
+                        "1001", HttpStatus.BAD_REQUEST));
+
+        order.setStatus(status);
+        order.setAttemptedPaymentAt(updatedDto.getAttemptedPaymentAt());
+
+        var orderUpdated = orderRepository.save(order);
+        log.info("OrderService.updateOrder - Order updated | status: {}", orderUpdated.getStatus());
+
+        OrderHistoryDocument orderHistory = modelMapper.map(orderUpdated, OrderHistoryDocument.class);
+
+        orderHistoryRepository.save(orderHistory);
+        log.info("OrderService.updateOrder - Order history updated | status: {}", orderUpdated.getStatus());
+
     }
 
 }

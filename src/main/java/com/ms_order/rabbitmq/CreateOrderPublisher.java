@@ -1,7 +1,7 @@
 package com.ms_order.rabbitmq;
 
 import com.ms_order.rabbitmq.dto.OrderCreatedDto;
-import com.ms_order.util.ConvertJson;
+import com.ms_order.util.JsonParserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,7 +23,7 @@ public class CreateOrderPublisher {
 
     public void send(OrderCreatedDto dto) {
         try {
-            var converted = ConvertJson.convertObjectToString(dto);
+            var converted = JsonParserUtil.toJson(dto);
             rabbitTemplate.convertAndSend(orderExchange, orderRoutingKey, converted);
             log.info("CreateOrderPublisher.send - Order created event sent | data: {}", converted);
         } catch (Exception e) {
