@@ -3,6 +3,7 @@ package com.ms_order.controller;
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
 import com.ms_order.model.dto.response.CreateOrderResponseDto;
+import com.ms_order.model.dto.response.OrderHistoryResponseDto;
 import com.ms_order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -41,4 +44,10 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findByFilters(filterDto, pageable));
     }
 
+    @GetMapping("history/{id}")
+    public ResponseEntity<List<OrderHistoryResponseDto>> findOrderHistoryByOrderId(@PathVariable Integer id) {
+        log.info("OrderController.getOrderHistoryById - Request received | id: {}", id);
+        var response = orderService.findOrderHistoryByOrderId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

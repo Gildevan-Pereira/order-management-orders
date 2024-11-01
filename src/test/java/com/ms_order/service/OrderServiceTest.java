@@ -98,7 +98,7 @@ class OrderServiceTest {
         assertThat(response.getItems()).hasSize(2);
         assertThat(orderCreatedDtoCaptor.getValue().getOrderId()).isEqualTo(orderEntityCaptor.getValue().getId());
         assertThat(orderCreatedDtoCaptor.getValue().getAmount()).isEqualTo(orderEntityCaptor.getValue().getAmount());
-        assertThat(orderHistoryEntityCaptor.getValue().getId()).isNull();
+        assertThat(orderHistoryEntityCaptor.getValue().getOrderId()).isNull();
         assertThat(orderHistoryEntityCaptor.getValue().getCreatedAt()).isNotNull();
         assertThat(orderHistoryEntityCaptor.getValue().getItems()).isNotNull();
 

@@ -1,6 +1,5 @@
-package com.ms_order.model.dto.request;
+package com.ms_order.model.dto.response;
 
-import com.ms_order.model.entity.ItemEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +11,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItemDto {
+public class OrderHistoryItemDto {
 
     private String name;
 

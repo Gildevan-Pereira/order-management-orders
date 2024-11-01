@@ -15,18 +15,19 @@ public class CreateOrderPublisher {
 
     private final RabbitTemplate rabbitTemplate;
 
-    @Value("${mq.exchanges.order_exchange}")
-    private String orderExchange;
+    @Value("${spring.rabbitmq.exchanges.created_order_exchange}")
+    private String exchange;
 
-    @Value("${mq.routing-keys.order_routing_key}")
-    private String orderRoutingKey;
+    @Value("${spring.rabbitmq.routing_keys.created_order_routing_key}")
+    private String routingKey;
 
     public void send(OrderCreatedDto dto) {
         try {
             var converted = JsonParserUtil.toJson(dto);
-            rabbitTemplate.convertAndSend(orderExchange, orderRoutingKey, converted);
+            rabbitTemplate.convertAndSend(exchange, routingKey, converted);
             log.info("CreateOrderPublisher.send - Order created event sent | data: {}", converted);
         } catch (Exception e) {
+
             log.error("CreateOrderPublisher.send - Error while sending message", e);
         }
     }

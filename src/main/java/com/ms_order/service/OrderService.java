@@ -1,10 +1,12 @@
 package com.ms_order.service;
 
 import com.ms_order.exception.BusinessException;
+import com.ms_order.messages.MessageEnum;
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
 import com.ms_order.model.dto.response.CreateOrderResponseDto;
+import com.ms_order.model.dto.response.OrderHistoryResponseDto;
 import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
@@ -95,7 +97,8 @@ public class OrderService {
 
     public CreateOrderResponseDto findById(Integer id) {
         var order = orderRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Order not find for id: " + id, "1001", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new BusinessException(
+                        MessageEnum.ORDER_NOT_FOUND, id.toString(), HttpStatus.NOT_FOUND));
         log.info("OrderService.findById - Order request found | id: {}", id);
         return modelMapper.map(order, CreateOrderResponseDto.class);
     }
@@ -119,8 +122,7 @@ public class OrderService {
 
         var order = orderRepository.findById(updatedDto.getOrderId())
                 .orElseThrow(() -> new BusinessException(
-                        "Order not find for id: " + updatedDto.getOrderId(),
-                        "1001", HttpStatus.BAD_REQUEST));
+                        MessageEnum.ORDER_NOT_FOUND, updatedDto.getOrderId().toString(), HttpStatus.NOT_FOUND));
 
         order.setStatus(status);
         order.setAttemptedPaymentAt(updatedDto.getAttemptedPaymentAt());
@@ -135,4 +137,19 @@ public class OrderService {
 
     }
 
+    public List<OrderHistoryResponseDto> findOrderHistoryByOrderId(Integer id) {
+
+        List<OrderHistoryDocument> history = orderHistoryRepository.findByOrderId(id);
+
+        if (history.isEmpty()) {
+            throw new BusinessException(MessageEnum.ORDER_HISTORY_NOT_FOUND, id.toString(), HttpStatus.NOT_FOUND);
+        }
+
+        log.info("OrderService.findOrderHistoryByOrderId - Order history find for id: {} | count: {}", id, history.size());
+        return history.stream().map(orderHistoryDocument -> {
+            var orderHistory = modelMapper.map(orderHistoryDocument, OrderHistoryResponseDto.class);
+            orderHistory.setId(orderHistoryDocument.getUuid());
+            return orderHistory;
+        }).toList();
+    }
 }

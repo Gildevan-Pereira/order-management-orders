@@ -1,5 +1,6 @@
 package com.ms_order.exception;
 
+import com.ms_order.messages.MessageEnum;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -11,9 +12,10 @@ public class BusinessException extends RuntimeException {
     private String code;
     private HttpStatus httpStatus;
 
-    public BusinessException(String message, String code, HttpStatus httpStatus) {
-        super(message);
-        this.code = code;
+    public BusinessException(MessageEnum message, String messageParam, HttpStatus httpStatus) {
+        super(messageParam != null ? String.format(message.getMessage(), messageParam) : message.getMessage());
+        this.code = message.getCode();
         this.httpStatus = httpStatus;
     }
+
 }

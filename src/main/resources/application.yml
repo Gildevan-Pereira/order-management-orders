@@ -33,12 +33,15 @@ spring:
     port: 5672
     username: guest
     password: guest
-
-mq:
-  queues:
-    create_order_queue: create_order_queue
-    update_order_queue: update_order_queue
-  exchanges:
-    order_exchange: order_exchange
-  routing-keys:
-    order_routing_key: order_routing_key
+    max_retry: 3
+    queues:
+      update_order:
+        queue: update_order_queue
+        retry_queue: update_order_retry_queue
+        dead_queue: update_order_dead_queue
+    exchanges:
+      update_order_exchange: update_order_exchange
+      created_order_exchange: created_order_exchange
+    routing_keys:
+      created_order_routing_key: created_order_routing_key
+      update_order_routing_key: update_order_routing_key
