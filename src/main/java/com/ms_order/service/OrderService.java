@@ -90,7 +90,7 @@ public class OrderService {
 
         var orderHistorySaved = orderHistoryRepository.save(orderHistory);
         log.info("OrderService.createOrder - Order history created successful | orderId: {} | orderHistoryId: {}",
-                orderSaved.getId(), orderHistorySaved.getUuid());
+                orderSaved.getId(), orderHistorySaved.getId());
 
         return orderResponse;
     }
@@ -103,13 +103,12 @@ public class OrderService {
         return modelMapper.map(order, CreateOrderResponseDto.class);
     }
 
+//    TODO: Refatorar lógica de filtro por status, pode haver uma lista
     public Page<CreateOrderResponseDto> findByFilters(OrderSearchFilterDto filterDto, Pageable pageable) {
-        log.info("OrderService.findByFilters - Filter order request received | filters: {}", filterDto);
-
-        OrderStatusEnum.fromName(filterDto.getStatus());
+        log.debug("OrderService.findByFilters - Filter order request received | filters: {}", filterDto);
 
         var ordersPage = orderRepository.findAll(OrderSpecification.filterTo(filterDto), pageable);
-        log.info("OrderService.findByFilters - Orders found for filters | count: {}", ordersPage.getTotalElements());
+        log.debug("OrderService.findByFilters - Orders found for filters | count: {}", ordersPage.getTotalElements());
         var orders = ordersPage.getContent().stream()
                 .map(order -> modelMapper.map(order, CreateOrderResponseDto.class)).toList();
         return new PageImpl<>(orders, pageable, ordersPage.getTotalElements());
@@ -148,7 +147,7 @@ public class OrderService {
         log.info("OrderService.findOrderHistoryByOrderId - Order history find for id: {} | count: {}", id, history.size());
         return history.stream().map(orderHistoryDocument -> {
             var orderHistory = modelMapper.map(orderHistoryDocument, OrderHistoryResponseDto.class);
-            orderHistory.setId(orderHistoryDocument.getUuid());
+            orderHistory.setId(orderHistoryDocument.getId());
             return orderHistory;
         }).toList();
     }
