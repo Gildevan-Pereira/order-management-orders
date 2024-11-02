@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ms_order.exception.InternalException;
 import com.ms_order.messages.MessageEnum;
-import com.ms_order.messages.Messages;
-import com.ms_order.rabbitmq.dto.OrderUpdatedDto;
 import org.springframework.http.HttpStatus;
 
 import java.nio.charset.StandardCharsets;

@@ -2,9 +2,9 @@ package com.ms_order.specification;
 
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
 import com.ms_order.model.entity.OrderEntity;
-import com.ms_order.model.enums.OrderStatusEnum;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -16,8 +16,10 @@ public class OrderSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
 //          TODO: Criar validação para o dto
-//          TODO: Adicionar filtro por IDs
 
+            if (!CollectionUtils.isEmpty(filterDto.getIds())) {
+                predicates.add(criteriaBuilder.and(root.get("id").in(filterDto.getIds())));
+            }
             if (filterDto.getStartDate() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), filterDto.getStartDate()));
             }
@@ -30,8 +32,8 @@ public class OrderSpecification {
             if (filterDto.getMaxAmount() != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("amount"), filterDto.getMaxAmount()));
             }
-            if (filterDto.getStatus() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("status"), OrderStatusEnum.fromName(filterDto.getStatus())));
+            if (!CollectionUtils.isEmpty(filterDto.getStatus())) {
+                predicates.add(criteriaBuilder.and(root.get("status").in(filterDto.getStatus())));
             }
             if (StringUtils.hasText(filterDto.getName())) {
                 predicates.add(criteriaBuilder.like(root.get("name"), "%" + filterDto.getName() + "%"));

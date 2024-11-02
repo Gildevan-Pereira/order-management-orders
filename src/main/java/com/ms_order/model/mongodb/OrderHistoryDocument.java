@@ -25,9 +25,10 @@ import java.util.List;
 public class OrderHistoryDocument {
 
     @Id
-    private String uuid;
+    private String id;
 
     private Integer orderId;
+
     private LocalDateTime createdAt;
 
     @CreatedDate
