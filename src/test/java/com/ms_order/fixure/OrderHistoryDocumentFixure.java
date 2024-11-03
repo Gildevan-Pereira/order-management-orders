@@ -5,7 +5,7 @@ import com.ms_order.model.mongodb.ItemHistoryDocument;
 import com.ms_order.model.mongodb.OrderHistoryDocument;
 import org.modelmapper.ModelMapper;
 
-public class OrderHistoryEntityFixure {
+public class OrderHistoryDocumentFixure {
 
     public static OrderHistoryDocument buildeDefault(CreateOrderResponseDto dto) {
 

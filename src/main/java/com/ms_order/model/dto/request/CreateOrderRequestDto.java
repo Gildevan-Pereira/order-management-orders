@@ -1,5 +1,7 @@
 package com.ms_order.model.dto.request;
 
+import com.ms_order.model.dto.validations.CreateOrderRequestDtoValidation;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@CreateOrderRequestDtoValidation
 public class CreateOrderRequestDto {
 
     private String name;
@@ -25,6 +28,7 @@ public class CreateOrderRequestDto {
 
     private String state;
 
+    @Valid
     private List<OrderItemDto> items;
 
 }

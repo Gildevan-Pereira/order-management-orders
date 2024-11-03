@@ -6,7 +6,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.List;
 
-public class ItemHistoryEntityFixure {
+public class ItemHistoryDocumentFixure {
 
     public static List<ItemHistoryDocument> buildDefault(List<ItemEntity> list){
         ModelMapper modelMapper = new ModelMapper();

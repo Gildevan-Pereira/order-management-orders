@@ -103,7 +103,6 @@ public class OrderService {
         return modelMapper.map(order, CreateOrderResponseDto.class);
     }
 
-//    TODO: Refatorar lógica de filtro por status, pode haver uma lista
     public Page<CreateOrderResponseDto> findByFilters(OrderSearchFilterDto filterDto, Pageable pageable) {
         log.debug("OrderService.findByFilters - Filter order request received | filters: {}", filterDto);
 
