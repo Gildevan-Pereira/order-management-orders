@@ -5,7 +5,7 @@ import com.ms_order.model.dto.request.OrderSearchFilterDto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
 public class OrderSearchFilterDtoFixture {
 
@@ -21,6 +21,21 @@ public class OrderSearchFilterDtoFixture {
                 .cpf("12345678900")
                 .city("New York")
                 .state("NY")
+                .build();
+    }
+
+    public static OrderSearchFilterDto buildEmpty() {
+        return OrderSearchFilterDto.builder()
+                .ids(Collections.emptyList())
+                .startDate(null)
+                .endDate(null)
+                .minAmount(null)
+                .maxAmount(null)
+                .status(Collections.emptyList())
+                .name("")
+                .cpf("")
+                .city("")
+                .state("")
                 .build();
     }
 }

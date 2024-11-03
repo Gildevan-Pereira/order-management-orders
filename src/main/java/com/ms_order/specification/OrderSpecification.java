@@ -15,10 +15,8 @@ public class OrderSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-//          TODO: Criar validação para o dto
-
             if (!CollectionUtils.isEmpty(filterDto.getIds())) {
-                predicates.add(criteriaBuilder.and(root.get("id").in(filterDto.getIds())));
+                predicates.add(root.get("id").in(filterDto.getIds()));
             }
             if (filterDto.getStartDate() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), filterDto.getStartDate()));
@@ -33,7 +31,7 @@ public class OrderSpecification {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("amount"), filterDto.getMaxAmount()));
             }
             if (!CollectionUtils.isEmpty(filterDto.getStatus())) {
-                predicates.add(criteriaBuilder.and(root.get("status").in(filterDto.getStatus())));
+                predicates.add(root.get("status").in(filterDto.getStatus()));
             }
             if (StringUtils.hasText(filterDto.getName())) {
                 predicates.add(criteriaBuilder.like(root.get("name"), "%" + filterDto.getName() + "%"));
@@ -48,6 +46,7 @@ public class OrderSpecification {
                 predicates.add(criteriaBuilder.equal(root.get("state"), filterDto.getState()));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+
         };
     }
 

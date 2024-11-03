@@ -1,13 +1,13 @@
 package com.ms_order.fixure;
 
-import com.ms_order.model.dto.response.CreateOrderResponseDto;
+import com.ms_order.model.dto.response.OrderResponseDto;
 import com.ms_order.model.mongodb.ItemHistoryDocument;
 import com.ms_order.model.mongodb.OrderHistoryDocument;
 import org.modelmapper.ModelMapper;
 
-public class OrderHistoryDocumentFixure {
+public class OrderHistoryDocumentFixture {
 
-    public static OrderHistoryDocument buildeDefault(CreateOrderResponseDto dto) {
+    public static OrderHistoryDocument buildDefault(OrderResponseDto dto) {
 
         ModelMapper modelMapper = new ModelMapper();
 

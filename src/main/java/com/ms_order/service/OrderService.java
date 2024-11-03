@@ -5,7 +5,7 @@ import com.ms_order.messages.MessageEnum;
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
-import com.ms_order.model.dto.response.CreateOrderResponseDto;
+import com.ms_order.model.dto.response.OrderResponseDto;
 import com.ms_order.model.dto.response.OrderHistoryResponseDto;
 import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
@@ -44,7 +44,7 @@ public class OrderService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public CreateOrderResponseDto createOrder(CreateOrderRequestDto requestDto) {
+    public OrderResponseDto createOrder(CreateOrderRequestDto requestDto) {
 
         var orderEntity = modelMapper.map(requestDto, OrderEntity.class);
         orderEntity.setStatus(OrderStatusEnum.CREATED);
@@ -68,7 +68,7 @@ public class OrderService {
         log.info("OrderService.createOrder - Order items created successful | orderId: {} | count: {}",
                 orderSaved.getId(), items.size());
 
-        var orderResponse = modelMapper.map(orderSaved, CreateOrderResponseDto.class);
+        var orderResponse = modelMapper.map(orderSaved, OrderResponseDto.class);
         var orderItemResponse = itemsSaved.stream()
                 .map(itemEntity -> modelMapper.map(itemEntity, OrderItemDto.class))
                 .toList();
@@ -95,21 +95,21 @@ public class OrderService {
         return orderResponse;
     }
 
-    public CreateOrderResponseDto findById(Integer id) {
+    public OrderResponseDto findById(Integer id) {
         var order = orderRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(
                         MessageEnum.ORDER_NOT_FOUND, id.toString(), HttpStatus.NOT_FOUND));
         log.info("OrderService.findById - Order request found | id: {}", id);
-        return modelMapper.map(order, CreateOrderResponseDto.class);
+        return modelMapper.map(order, OrderResponseDto.class);
     }
 
-    public Page<CreateOrderResponseDto> findByFilters(OrderSearchFilterDto filterDto, Pageable pageable) {
+    public Page<OrderResponseDto> findByFilters(OrderSearchFilterDto filterDto, Pageable pageable) {
         log.debug("OrderService.findByFilters - Filter order request received | filters: {}", filterDto);
 
         var ordersPage = orderRepository.findAll(OrderSpecification.filterTo(filterDto), pageable);
         log.debug("OrderService.findByFilters - Orders found for filters | count: {}", ordersPage.getTotalElements());
         var orders = ordersPage.getContent().stream()
-                .map(order -> modelMapper.map(order, CreateOrderResponseDto.class)).toList();
+                .map(order -> modelMapper.map(order, OrderResponseDto.class)).toList();
         return new PageImpl<>(orders, pageable, ordersPage.getTotalElements());
     }
 

@@ -5,7 +5,7 @@ import com.ms_order.fixure.*;
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
-import com.ms_order.model.dto.response.CreateOrderResponseDto;
+import com.ms_order.model.dto.response.OrderResponseDto;
 import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
@@ -16,7 +16,6 @@ import com.ms_order.rabbitmq.dto.OrderCreatedDto;
 import com.ms_order.repository.ItemRepository;
 import com.ms_order.repository.OrderHistoryRepository;
 import com.ms_order.repository.OrderRepository;
-import com.ms_order.specification.OrderSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,14 +64,15 @@ class OrderServiceTest {
     void setUp(){
         orderService = new OrderService(orderHistoryRepository, createOrderPublisher, orderRepository, itemRepository, modelMapper);
     }
+
     private final OrderItemDto itemDto1 = OrdemItemDtoFixure.buildDefault(2, BigDecimal.valueOf(100.00));
     private final OrderItemDto itemDto2 = OrdemItemDtoFixure.buildDefault(1, BigDecimal.valueOf(50.00));
     private final CreateOrderRequestDto requestDto = CreateOrderRequestDtoFixure.buildDefault(List.of(itemDto1, itemDto2));
     private final OrderEntity orderEntity = OrderEntityFixure.buildDefault(requestDto);
     private final List<ItemEntity> itemEntity = ItemEntityFixure.buildDefault(requestDto);
 
-    private final CreateOrderResponseDto responseDto = CreateOrderResponseDtoFixure.buildDefault(orderEntity, List.of(itemDto1, itemDto2));
-    private final OrderHistoryDocument orderHistory = OrderHistoryDocumentFixure.buildeDefault(responseDto);
+    private final OrderResponseDto responseDto = CreateOrderResponseDtoFixure.buildDefault(orderEntity, List.of(itemDto1, itemDto2));
+    private final OrderHistoryDocument orderHistory = OrderHistoryDocumentFixture.buildDefault(responseDto);
     private final List<ItemHistoryDocument> itemHistory = ItemHistoryDocumentFixure.buildDefault(itemEntity);
     private final ItemHistoryDocument itemHistory1 = itemHistory.getFirst();
     private final ItemHistoryDocument itemHistory2 = itemHistory.getLast();
@@ -88,7 +88,7 @@ class OrderServiceTest {
         when(modelMapper.map(itemDto1, ItemEntity.class)).thenReturn(itemEntity.getFirst());
         when(modelMapper.map(itemDto2, ItemEntity.class)).thenReturn(itemEntity.get(1));
         when(itemRepository.saveAll(itemEntity)).thenReturn(itemEntity);
-        when(modelMapper.map(any(OrderEntity.class), eq(CreateOrderResponseDto.class))).thenReturn(responseDto);
+        when(modelMapper.map(any(OrderEntity.class), eq(OrderResponseDto.class))).thenReturn(responseDto);
         when(modelMapper.map(itemEntity.getFirst(), OrderItemDto.class)).thenReturn(itemDto1);
         when(modelMapper.map(itemEntity.get(1), OrderItemDto.class)).thenReturn(itemDto2);
         when(modelMapper.map(orderEntity, OrderHistoryDocument.class)).thenReturn(orderHistory);
@@ -102,7 +102,7 @@ class OrderServiceTest {
                 .send(orderCreatedDtoCaptor.capture());
 
         assertThat(response).isNotNull();
-        assertThat(response).isInstanceOf(CreateOrderResponseDto.class);
+        assertThat(response).isInstanceOf(OrderResponseDto.class);
         assertThat(orderEntityCaptor.getValue().getStatus()).isEqualTo(OrderStatusEnum.CREATED);
         assertThat(orderEntityCaptor.getValue().getAmount()).isEqualTo(BigDecimal.valueOf(250.00));
         assertThat(response.getItems()).hasSize(2);
@@ -112,48 +112,47 @@ class OrderServiceTest {
 
     }
     @Test
-    void shouldFindByIdWhenIdExists(){
+    void shouldReturnOrderWhenIdExists(){
         when(orderRepository.findById(1)).thenReturn(Optional.of(orderEntity));
-        when(modelMapper.map(any(OrderEntity.class), eq(CreateOrderResponseDto.class))).thenReturn(responseDto);
+        when(modelMapper.map(any(OrderEntity.class), eq(OrderResponseDto.class))).thenReturn(responseDto);
 
         var response = orderService.findById(1);
 
         verify(orderRepository, times(1)).findById(1);
 
         assertThat(response).isNotNull();
-        assertThat(response).isInstanceOf(CreateOrderResponseDto.class);
-        assertThat(orderEntity).isNotNull();
-        assertThat(responseDto).isNotNull();
+        assertThat(response).isInstanceOf(OrderResponseDto.class);
+        assertThat(response.getId()).isEqualTo(1);
     }
 
     @Test
-    void shouldFindByIdWhenIdNotExists(){
+    void shouldThrowsBusinessExceptionWhenIdNotExists(){
         when(orderRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(BusinessException.class, () -> {
             orderService.findById(1);
         });
 
-        verify(orderRepository, times(1)).findById(1);
+        verify(modelMapper, never()).map(any(OrderEntity.class), eq(OrderResponseDto.class));
     }
 
     @Test
     void shouldFindByFiltersSuccessful(){
-        var specification = OrderSpecification.filterTo(filterDto);
+
+        var orders = List.of(orderEntity);
+
         Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "id"));
-        Page<OrderEntity> orderPage = new PageImpl<>(List.of(orderEntity));
+        Page<OrderEntity> orderPage = new PageImpl<>(orders);
         when(orderRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(orderPage);
-//        when(orderPage.stream().map(orderEntity -> any())).thenReturn(Stream.of(responseDto));
-        var orderConverted = when(modelMapper.map(orderEntity, CreateOrderResponseDto.class)).thenReturn(responseDto);
+        when(modelMapper.map(orderEntity, OrderResponseDto.class)).thenReturn(responseDto);
 
         var response = orderService.findByFilters(filterDto, pageable);
 
-        verify(orderRepository, times(1)).findAll(any(Specification.class), any(Pageable.class));
+        verify(orderRepository, times(1)).findAll(any(Specification.class), eq(pageable));
 
         assertThat(response).isNotNull();
         assertThat(response).isInstanceOf(PageImpl.class);
-        assertThat(pageable.getPageSize()).isNotZero();
-        assertThat(filterDto).isNotNull();
+        assertThat(pageable.getPageSize()).isEqualTo(orders.size());
 
     }
 }

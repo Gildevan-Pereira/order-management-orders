@@ -2,7 +2,7 @@ package com.ms_order.controller;
 
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
-import com.ms_order.model.dto.response.CreateOrderResponseDto;
+import com.ms_order.model.dto.response.OrderResponseDto;
 import com.ms_order.model.dto.response.OrderHistoryResponseDto;
 import com.ms_order.service.OrderService;
 import jakarta.validation.Valid;
@@ -25,21 +25,21 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<CreateOrderResponseDto> createOrder(@RequestBody @Valid CreateOrderRequestDto dto) {
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody @Valid CreateOrderRequestDto dto) {
         log.info("OrderController.createOrder - Request received | requestDto: {}", dto);
         var response = orderService.createOrder(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CreateOrderResponseDto> getOrderById(@PathVariable Integer id) {
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Integer id) {
         log.info("OrderController.getOrderById - Request received | id: {}", id);
         var response = orderService.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<Page<CreateOrderResponseDto>> findByFilter(@Valid OrderSearchFilterDto filterDto, Pageable pageable) {
+    public ResponseEntity<Page<OrderResponseDto>> findByFilter(@Valid OrderSearchFilterDto filterDto, Pageable pageable) {
         log.info("OrderController.findByFilters - Request received | requestDto: {}", filterDto);
         return ResponseEntity.ok(orderService.findByFilters(filterDto, pageable));
     }

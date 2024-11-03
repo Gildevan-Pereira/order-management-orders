@@ -16,6 +16,8 @@ public class CreateOrderRequestDtoValidator implements ConstraintValidator<Creat
     public boolean isValid(CreateOrderRequestDto requestDto, ConstraintValidatorContext context) {
         List<String> errors = new ArrayList<>();
 
+//        TODO: Criar constante para REGEX
+
         if (Objects.isNull(requestDto.getName()) || !requestDto.getName().matches("^[A-Za-zÀ-ÖØ-öø-ÿ\\s]{2,255}$")) {
             errors.add(MessageEnum.CLIENT_NAME_INVALID.joinCodeAndMessage());
         }

@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateOrderResponseDto {
+public class OrderResponseDto {
 
 
     private Integer id;

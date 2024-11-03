@@ -15,6 +15,7 @@ public class OrderItemDtoValidator implements ConstraintValidator<OrderItemDtoVa
     @Override
     public boolean isValid(OrderItemDto itemDto, ConstraintValidatorContext context) {
 
+//        TODO: Criar classe abstrata para criar o método setErrorMessages
         List<String> errors = new ArrayList<>();
 
         if (Objects.isNull(itemDto.getName()) || !itemDto.getName().matches("^[A-Za-z0-9À-ÖØ-öø-ÿ.,'\\s]{5,255}$")) {
@@ -26,7 +27,7 @@ public class OrderItemDtoValidator implements ConstraintValidator<OrderItemDtoVa
         if  (Objects.isNull(itemDto.getUnityPrice()) || itemDto.getUnityPrice().scale() > 2 || itemDto.getUnityPrice().compareTo(BigDecimal.ZERO) < 0) {
             errors.add(MessageEnum.ITEM_UNITY_PRICE_INVALID.joinCodeAndMessage());
         }
-        if  (Objects.isNull(itemDto.getCount()) || itemDto.getCount() < 0) {
+        if  (Objects.isNull(itemDto.getCount()) || itemDto.getCount() <= 0) {
             errors.add(MessageEnum.ITEM_COUNT_INVALID.joinCodeAndMessage());
         }
 
