@@ -1,6 +1,6 @@
 package com.ms_order.specification;
 
-import com.ms_order.fixure.OrderSearchFilterDtoFixture;
+import com.ms_order.fixture.OrderSearchFilterDtoFixture;
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
 import com.ms_order.model.entity.OrderEntity;
 import jakarta.persistence.criteria.*;

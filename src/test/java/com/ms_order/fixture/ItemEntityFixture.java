@@ -1,13 +1,12 @@
-package com.ms_order.fixure;
+package com.ms_order.fixture;
 
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.entity.ItemEntity;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-public class ItemEntityFixure {
+public class ItemEntityFixture {
 
     public static List<ItemEntity> buildDefault(CreateOrderRequestDto requestDto) {
         ModelMapper modelMapper = new ModelMapper();

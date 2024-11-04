@@ -7,8 +7,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:msorderdb}
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    username: ${POSTGRES_USERNAME:MS_ORDERS}
+    password: ${POSTGRES_PASSWORD:MS_ORDERS}
     driver-class-name: org.postgresql.Driver
     jpa:
       hibernate:

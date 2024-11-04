@@ -1,4 +1,4 @@
-package com.ms_order.fixure;
+package com.ms_order.fixture;
 
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
 

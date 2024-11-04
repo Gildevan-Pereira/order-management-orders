@@ -10,6 +10,8 @@ import com.ms_order.model.dto.response.OrderHistoryResponseDto;
 import com.ms_order.model.entity.ItemEntity;
 import com.ms_order.model.entity.OrderEntity;
 import com.ms_order.model.enums.OrderStatusEnum;
+import com.ms_order.model.mappers.OrderEntityMapper;
+import com.ms_order.model.mappers.OrderHistoryMapper;
 import com.ms_order.model.mongodb.ItemHistoryDocument;
 import com.ms_order.model.mongodb.OrderHistoryDocument;
 import com.ms_order.rabbitmq.CreateOrderPublisher;
@@ -128,7 +130,7 @@ public class OrderService {
         var orderUpdated = orderRepository.save(order);
         log.info("OrderService.updateOrder - Order updated | status: {}", orderUpdated.getStatus());
 
-        OrderHistoryDocument orderHistory = modelMapper.map(orderUpdated, OrderHistoryDocument.class);
+        OrderHistoryDocument orderHistory = OrderEntityMapper.toDocument(orderUpdated);
 
         orderHistoryRepository.save(orderHistory);
         log.info("OrderService.updateOrder - Order history updated | status: {}", orderUpdated.getStatus());
@@ -143,11 +145,7 @@ public class OrderService {
             throw new BusinessException(MessageEnum.ORDER_HISTORY_NOT_FOUND, id.toString(), HttpStatus.NOT_FOUND);
         }
 
-        log.info("OrderService.findOrderHistoryByOrderId - Order history find for id: {} | count: {}", id, history.size());
-        return history.stream().map(orderHistoryDocument -> {
-            var orderHistory = modelMapper.map(orderHistoryDocument, OrderHistoryResponseDto.class);
-            orderHistory.setId(orderHistoryDocument.getId());
-            return orderHistory;
-        }).toList();
+        log.debug("OrderService.findOrderHistoryByOrderId - Order history find for id: {} | count: {}", id, history.size());
+        return history.stream().map(OrderHistoryMapper::toResponseDto).toList();
     }
 }

@@ -1,7 +1,7 @@
 package com.ms_order.service;
 
 import com.ms_order.exception.BusinessException;
-import com.ms_order.fixure.*;
+import com.ms_order.fixture.*;
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.dto.request.OrderSearchFilterDto;
@@ -19,6 +19,7 @@ import com.ms_order.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -29,6 +30,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,29 +53,27 @@ class OrderServiceTest {
     private ItemRepository itemRepository;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private RabbitTemplate rabbitTemplate;
     @Captor
     private ArgumentCaptor<OrderCreatedDto> orderCreatedDtoCaptor;
     @Captor
     private ArgumentCaptor<OrderEntity> orderEntityCaptor;
     @Captor
-    private ArgumentCaptor<OrderHistoryDocument> orderHistoryEntityCaptor;
+    private ArgumentCaptor<OrderHistoryDocument> orderHistoryDocumentCaptor;
 
     @BeforeEach
     void setUp(){
         orderService = new OrderService(orderHistoryRepository, createOrderPublisher, orderRepository, itemRepository, modelMapper);
     }
 
-    private final OrderItemDto itemDto1 = OrdemItemDtoFixure.buildDefault(2, BigDecimal.valueOf(100.00));
-    private final OrderItemDto itemDto2 = OrdemItemDtoFixure.buildDefault(1, BigDecimal.valueOf(50.00));
-    private final CreateOrderRequestDto requestDto = CreateOrderRequestDtoFixure.buildDefault(List.of(itemDto1, itemDto2));
-    private final OrderEntity orderEntity = OrderEntityFixure.buildDefault(requestDto);
-    private final List<ItemEntity> itemEntity = ItemEntityFixure.buildDefault(requestDto);
+    private final OrderItemDto itemDto1 = OrderItemDtoFixture.buildDefault(2, BigDecimal.valueOf(100.00));
+    private final OrderItemDto itemDto2 = OrderItemDtoFixture.buildDefault(1, BigDecimal.valueOf(50.00));
+    private final CreateOrderRequestDto requestDto = CreateOrderRequestDtoFixture.buildDefault(List.of(itemDto1, itemDto2));
+    private final OrderEntity orderEntity = OrderEntityFixture.buildDefault(requestDto);
+    private final List<ItemEntity> itemsEntity = ItemEntityFixture.buildDefault(requestDto);
 
-    private final OrderResponseDto responseDto = CreateOrderResponseDtoFixure.buildDefault(orderEntity, List.of(itemDto1, itemDto2));
-    private final OrderHistoryDocument orderHistory = OrderHistoryDocumentFixture.buildDefault(responseDto);
-    private final List<ItemHistoryDocument> itemHistory = ItemHistoryDocumentFixure.buildDefault(itemEntity);
+    private final OrderResponseDto responseDto = CreateOrderResponseDtoFixture.buildDefault(orderEntity, List.of(itemDto1, itemDto2));
+    private final OrderHistoryDocument orderHistory = OrderHistoryDocumentFixture.buildFromResponseDto(responseDto);
+    private final List<ItemHistoryDocument> itemHistory = ItemHistoryDocumentFixture.buildFromEntity(itemsEntity);
     private final ItemHistoryDocument itemHistory1 = itemHistory.getFirst();
     private final ItemHistoryDocument itemHistory2 = itemHistory.getLast();
 
@@ -85,16 +85,16 @@ class OrderServiceTest {
         when(modelMapper.map(requestDto, OrderEntity.class)).thenReturn(orderEntity);
         when(orderRepository.save(orderEntityCaptor.capture()))
             .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
-        when(modelMapper.map(itemDto1, ItemEntity.class)).thenReturn(itemEntity.getFirst());
-        when(modelMapper.map(itemDto2, ItemEntity.class)).thenReturn(itemEntity.get(1));
-        when(itemRepository.saveAll(itemEntity)).thenReturn(itemEntity);
+        when(modelMapper.map(itemDto1, ItemEntity.class)).thenReturn(itemsEntity.getFirst());
+        when(modelMapper.map(itemDto2, ItemEntity.class)).thenReturn(itemsEntity.get(1));
+        when(itemRepository.saveAll(itemsEntity)).thenReturn(itemsEntity);
         when(modelMapper.map(any(OrderEntity.class), eq(OrderResponseDto.class))).thenReturn(responseDto);
-        when(modelMapper.map(itemEntity.getFirst(), OrderItemDto.class)).thenReturn(itemDto1);
-        when(modelMapper.map(itemEntity.get(1), OrderItemDto.class)).thenReturn(itemDto2);
+        when(modelMapper.map(itemsEntity.getFirst(), OrderItemDto.class)).thenReturn(itemDto1);
+        when(modelMapper.map(itemsEntity.get(1), OrderItemDto.class)).thenReturn(itemDto2);
         when(modelMapper.map(orderEntity, OrderHistoryDocument.class)).thenReturn(orderHistory);
-        when(modelMapper.map(itemEntity.getFirst(), ItemHistoryDocument.class)).thenReturn(itemHistory1);
-        when(modelMapper.map(itemEntity.getLast(), ItemHistoryDocument.class)).thenReturn(itemHistory2);
-        when(orderHistoryRepository.save(orderHistoryEntityCaptor.capture())).thenReturn(orderHistory);
+        when(modelMapper.map(itemsEntity.getFirst(), ItemHistoryDocument.class)).thenReturn(itemHistory1);
+        when(modelMapper.map(itemsEntity.getLast(), ItemHistoryDocument.class)).thenReturn(itemHistory2);
+        when(orderHistoryRepository.save(orderHistoryDocumentCaptor.capture())).thenReturn(orderHistory);
 
         var response = orderService.createOrder(requestDto);
 
@@ -108,7 +108,7 @@ class OrderServiceTest {
         assertThat(response.getItems()).hasSize(2);
         assertThat(orderCreatedDtoCaptor.getValue().getOrderId()).isEqualTo(orderEntityCaptor.getValue().getId());
         assertThat(orderCreatedDtoCaptor.getValue().getAmount()).isEqualTo(orderEntityCaptor.getValue().getAmount());
-        assertThat(orderHistoryEntityCaptor.getValue().getItems()).isNotEmpty();
+        assertThat(orderHistoryDocumentCaptor.getValue().getItems()).isNotEmpty();
 
     }
     @Test
@@ -129,9 +129,7 @@ class OrderServiceTest {
     void shouldThrowsBusinessExceptionWhenIdNotExists(){
         when(orderRepository.findById(1)).thenReturn(Optional.empty());
 
-        assertThrows(BusinessException.class, () -> {
-            orderService.findById(1);
-        });
+        assertThrows(BusinessException.class, () -> orderService.findById(1));
 
         verify(modelMapper, never()).map(any(OrderEntity.class), eq(OrderResponseDto.class));
     }
@@ -153,6 +151,71 @@ class OrderServiceTest {
         assertThat(response).isNotNull();
         assertThat(response).isInstanceOf(PageImpl.class);
         assertThat(pageable.getPageSize()).isEqualTo(orders.size());
+    }
 
+    @Test
+    void shouldUpdateOrderSuccessful() {
+        var updatedDto = OrderUpdatedDtoFixture.buildDefault();
+        orderEntity.setItems(itemsEntity);
+
+        when(orderRepository.findById(updatedDto.getOrderId())).thenReturn(Optional.of(orderEntity));
+        when(orderRepository.save(orderEntityCaptor.capture()))
+                .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
+
+        orderService.updateOrder(updatedDto);
+
+        verify(orderHistoryRepository).save(orderHistoryDocumentCaptor.capture());
+
+        assertThat(orderHistoryDocumentCaptor.getValue().getOrderId()).isEqualTo(updatedDto.getOrderId());
+        assertThat(orderHistoryDocumentCaptor.getValue()
+                .getStatus()).isEqualTo(OrderStatusEnum.valueOf(updatedDto.getStatus()));
+        assertThat(orderHistoryDocumentCaptor.getValue().getAttemptedPaymentAt()).isEqualTo(updatedDto.getAttemptedPaymentAt());
+    }
+
+    @Test
+    void shouldThrowsBusinessExceptionWhenStatusIsInvalid() {
+        var updatedDto = OrderUpdatedDtoFixture.buildDefault();
+        updatedDto.setStatus("INVALID");
+
+        Executable executable = () -> orderService.updateOrder(updatedDto);
+
+        assertThrows(BusinessException.class, executable);
+    }
+
+    @Test
+    void shouldThrowsBusinessExceptionWhenOrderNotFound() {
+        var updatedDto = OrderUpdatedDtoFixture.buildDefault();
+        orderEntity.setItems(itemsEntity);
+
+        when(orderRepository.findById(updatedDto.getOrderId())).thenReturn(Optional.empty());
+
+        Executable executable = () -> orderService.updateOrder(updatedDto);
+
+        assertThrows(BusinessException.class, executable);
+
+    }
+
+    @Test
+    void shouldReturnHistoryByOrderId() {
+        var historyDocument = List.of(OrderHistoryDocumentFixture.buildDefault());
+
+        when(orderHistoryRepository.findByOrderId(historyDocument.getFirst().getOrderId())).thenReturn(historyDocument);
+
+        var history = orderService.findOrderHistoryByOrderId(historyDocument.getFirst().getOrderId());
+
+        verify(orderHistoryRepository).findByOrderId(historyDocument.getFirst().getOrderId());
+        assertThat(history.size()).isEqualTo(historyDocument.size());
+        assertThat(history.getFirst().getOrderId()).isEqualTo(historyDocument.getFirst().getOrderId());
+        assertThat(history.getFirst().getItems().size()).isEqualTo(historyDocument.getFirst().getItems().size());
+    }
+
+    @Test
+    void shouldThrowsBusinessExceptionWhenHistoryNotFound() {
+
+        when(orderHistoryRepository.findByOrderId(anyInt())).thenReturn(Collections.emptyList());
+
+        Executable executable = () -> orderService.findOrderHistoryByOrderId(1);
+
+        assertThrows(BusinessException.class, executable);
     }
 }

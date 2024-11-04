@@ -14,28 +14,27 @@ public class JsonParserUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public static String toJson(Object obj) {
+        if (obj == null) {
+            throw new InternalException(MessageEnum.JSON_PARSE_ERROR, HttpStatus.BAD_GATEWAY);
+        }
 
         try {
             return objectMapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
-           throw new InternalException(MessageEnum.GENERIC_ERROR, HttpStatus.BAD_GATEWAY);
-        }
-    }
-
-    public static <T> T fromJson(String input, Class<T> outputType) {
-        try {
-            return objectMapper.readValue(input, outputType);
-        } catch (JsonProcessingException e) {
-            throw new InternalException(MessageEnum.GENERIC_ERROR, HttpStatus.BAD_GATEWAY);
+           throw new InternalException(MessageEnum.JSON_PARSE_ERROR, HttpStatus.BAD_GATEWAY);
         }
     }
 
     public static <T> T fromBytes(byte[] input, Class<T> outputType) {
+        if (input == null) {
+            throw new InternalException(MessageEnum.JSON_PARSE_ERROR, HttpStatus.BAD_GATEWAY);
+        }
+
         try {
             String value = new String(input, StandardCharsets.UTF_8);
             return objectMapper.readValue(value, outputType);
         } catch (JsonProcessingException e) {
-            throw new InternalException(MessageEnum.GENERIC_ERROR, HttpStatus.BAD_GATEWAY);
+            throw new InternalException(MessageEnum.JSON_PARSE_ERROR, HttpStatus.BAD_GATEWAY);
         }
     }
 }

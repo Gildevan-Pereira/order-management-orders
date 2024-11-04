@@ -1,9 +1,9 @@
-package com.ms_order.fixure;
+package com.ms_order.fixture;
 
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.entity.OrderEntity;
 
-public class OrderEntityFixure {
+public class OrderEntityFixture {
 
     public static OrderEntity buildDefault(CreateOrderRequestDto requestDto) {
        return OrderEntity.builder()

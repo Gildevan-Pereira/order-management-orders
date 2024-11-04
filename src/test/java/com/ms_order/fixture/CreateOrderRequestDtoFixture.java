@@ -1,11 +1,11 @@
-package com.ms_order.fixure;
+package com.ms_order.fixture;
 
 import com.ms_order.model.dto.request.CreateOrderRequestDto;
 import com.ms_order.model.dto.request.OrderItemDto;
 
 import java.util.List;
 
-public class CreateOrderRequestDtoFixure {
+public class CreateOrderRequestDtoFixture {
 
     public static CreateOrderRequestDto buildDefault(List<OrderItemDto> list){
         return CreateOrderRequestDto.builder()

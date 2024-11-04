@@ -8,6 +8,8 @@ import lombok.Getter;
 public enum MessageEnum {
 
     GENERIC_ERROR("0001", "An error has occurred"),
+    JSON_PARSE_ERROR("0002", "An error has occurred"),
+    ERROR_PUBLISHER("0003", "An error has occurred"),
     ORDER_HISTORY_NOT_FOUND("0101", "Order history not found for id: %s"),
     ORDER_NOT_FOUND("0100", "Order not found for id: %s"),
     INVALID_STATUS ("0200","Invalid status given. Accepted values: %s"),

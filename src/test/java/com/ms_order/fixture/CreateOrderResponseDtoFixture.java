@@ -1,4 +1,4 @@
-package com.ms_order.fixure;
+package com.ms_order.fixture;
 
 import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.dto.response.OrderResponseDto;
@@ -6,7 +6,7 @@ import com.ms_order.model.entity.OrderEntity;
 
 import java.util.List;
 
-public class CreateOrderResponseDtoFixure {
+public class CreateOrderResponseDtoFixture {
 
     public static OrderResponseDto buildDefault(OrderEntity orderEntity, List<OrderItemDto> items) {
         return OrderResponseDto.builder()
