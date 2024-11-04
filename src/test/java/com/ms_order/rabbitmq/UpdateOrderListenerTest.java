@@ -93,4 +93,18 @@ class UpdateOrderListenerTest {
         var retryHeader = message.getMessageProperties().getHeader("x-retry-count");
         assertThat(retryHeader).isNotNull().isEqualTo(1);
     }
+
+    @Test
+    void shouldSendToDeadWhenMaxRetryIsReached() {
+        String json = "{\"orderId\":1,\"status\":\"PROCESSED\",\"attemptedPaymentAt\":\"2024-11-01T19:35\"}";
+        Message message = new Message(json.getBytes());
+        message.getMessageProperties().setHeader("x-retry-count", 3);
+        doThrow(RuntimeException.class).when(orderService).updateOrder(any());
+
+        listener.listen(message);
+
+        verify(rabbitTemplate).convertAndSend(exchange, dead, message);
+        var retryHeader = message.getMessageProperties().getHeader("x-retry-count");
+        assertThat(retryHeader).isNotNull().isEqualTo(3);
+    }
 }
