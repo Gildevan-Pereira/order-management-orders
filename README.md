@@ -1,5 +1,5 @@
 # Microsserviço de Criação de Pedido 
-Este projeto é microsserviço de um sistema distribuido que gerencia o fluxo de criação e aprovação de pedidos.
+Este projeto é um microsserviço de um sistema distribuido que gerencia um fluxo de criação e aprovação de pedidos.
 
 ## Índice
 - [Instalação](#instalação)
@@ -57,13 +57,9 @@ perder informações após atualizar o dado no banco SQL;
 ### Funcionalidades
 - Criar Pedido 
 
-    ``createOrder()``
-
-> Salva o pedido no banco de dados e publica o evento de criação de ordem no rrabitmq
+> Salva o pedido no banco de dados e publica o evento de criação de ordem no rabbitmq
 
 - Atualizar pedido
-
-    ``updateOrder()``
 
 > Recebe o evento de confirmação ou rejeição do pagamento e atualiza a ordem no banco de dados.
   Se o dado vier inválido, será enviado o evento para uma fila morta, mas se houver outro problema como falha de 
@@ -71,28 +67,20 @@ perder informações após atualizar o dado no banco SQL;
 
 - Salvar Histórico
 
-  ``createOrder() e updateOrder``
-
 > O histórico é o mesmo objeto que é salvo no banco SQL, é um registro de todas as alterações que a ordem sofreu.
   O salvamento acontece na criação de ordem e na atualização após a confirmação ou recusa do pagamento, portanto 
   não existe um método específico para essa ação.
 
 - Busca por ID
         
-    ``finById()``
-
 > A busca por ID tráz a transação que esteja associada ao ID informado
 
 - Busca por Filtro
-
-  ``finByFilter()``
 
 > A busca por filtro é realizada passando filtros específicos no parãmetro da requisição. 
   O filtro trará todos os registros que possuídem as informações passadas no filtro
 
 - Busca de Histórico por ID- 
-
-  ``finHistoryByOrderId()``    
 
 > O resultado da busca de histórico por ID, é uma lista que contém o mesmo objeto em estados diferentes, então o 
   mesmo id pode haver mais de um registro, trazendo assim uma lista da mesma ordem, porem a busca é realizada pelo
