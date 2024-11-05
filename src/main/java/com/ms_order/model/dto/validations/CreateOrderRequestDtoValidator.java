@@ -27,13 +27,13 @@ public class CreateOrderRequestDtoValidator implements ConstraintValidator<Creat
         if (Objects.isNull(requestDto.getCity()) || !requestDto.getCity().matches("^[A-Za-zÀ-ÖØ-öø-ÿ\\s]{3,50}$")) {
             errors.add(MessageEnum.CITY_INVALID.joinCodeAndMessage());
         }
-        if (Objects.isNull(requestDto.getAddress()) || !requestDto.getAddress().matches("^[A-Za-z0-9À-ÖØ-öø-ÿ.,'\\s]{10,255}$")) {
+        if (Objects.isNull(requestDto.getAddress()) || !requestDto.getAddress().matches("^[A-Za-z0-9À-ÖØ-öø-ÿ.,'\\s]{5,255}$")) {
             errors.add(MessageEnum.ADDRESS_INVALID.joinCodeAndMessage());
         }
         if (Objects.isNull(requestDto.getPostalCode()) || !requestDto.getPostalCode().matches("^\\d{8}$")) {
             errors.add(MessageEnum.POSTAL_CODE_INVALID.joinCodeAndMessage());
         }
-        if (Objects.isNull(requestDto.getState()) || !requestDto.getState().matches("[^A-Za-z]{2}$")) {
+        if (Objects.isNull(requestDto.getState()) || !requestDto.getState().matches("^(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RO|RR|RS|SC|SP|SE|TO)$")) {
             errors.add(MessageEnum.STATE_INVALID.joinCodeAndMessage());
         }
         if (CollectionUtils.isEmpty(requestDto.getItems())) {

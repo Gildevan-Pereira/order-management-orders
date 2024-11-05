@@ -18,4 +18,17 @@ public class CreateOrderRequestDtoFixture {
                 .items(list)
                 .build();
     }
+
+    public static CreateOrderRequestDto buildFromParams(String name, String cpf, String address, String postalCode,
+                                                        String city, String state, List<OrderItemDto> list){
+        return CreateOrderRequestDto.builder()
+                .name(name)
+                .cpf(cpf)
+                .address(address)
+                .postalCode(postalCode)
+                .city(city)
+                .state(state)
+                .items(list)
+                .build();
+    }
 }
