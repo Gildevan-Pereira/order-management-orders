@@ -61,4 +61,5 @@ public class ApiExceptionHandler {
         var responseBody = new ErrorResponseDto(errorDtos);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
     }
+
 }

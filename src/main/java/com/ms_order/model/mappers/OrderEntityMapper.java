@@ -18,6 +18,8 @@ public class OrderEntityMapper {
 
         return OrderHistoryDocument.builder()
                 .orderId(orderEntity.getId())
+                .createdAt(orderEntity.getCreatedAt())
+                .amount(orderEntity.getAmount())
                 .status(orderEntity.getStatus())
                 .name(orderEntity.getName())
                 .cpf(orderEntity.getCpf())

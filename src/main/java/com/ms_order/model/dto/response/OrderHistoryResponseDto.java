@@ -1,6 +1,5 @@
 package com.ms_order.model.dto.response;
 
-import com.ms_order.model.dto.request.OrderItemDto;
 import com.ms_order.model.enums.OrderStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +21,8 @@ public class OrderHistoryResponseDto {
     private Integer orderId;
 
     private LocalDateTime createdAt;
+
+    private LocalDateTime historyCreatedAt;
 
     private BigDecimal amount;
 

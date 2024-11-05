@@ -25,7 +25,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -68,8 +67,8 @@ class OrderServiceTest {
     private final OrderItemDto itemDto1 = OrderItemDtoFixture.buildDefault(2, BigDecimal.valueOf(100.00));
     private final OrderItemDto itemDto2 = OrderItemDtoFixture.buildDefault(1, BigDecimal.valueOf(50.00));
     private final CreateOrderRequestDto requestDto = CreateOrderRequestDtoFixture.buildDefault(List.of(itemDto1, itemDto2));
-    private final OrderEntity orderEntity = OrderEntityFixture.buildDefault(requestDto);
-    private final List<ItemEntity> itemsEntity = ItemEntityFixture.buildDefault(requestDto);
+    private final OrderEntity orderEntity = OrderEntityFixture.buildFromRequestDto(requestDto);
+    private final List<ItemEntity> itemsEntity = ItemEntityFixture.buildFromRequestDto(requestDto);
 
     private final OrderResponseDto responseDto = CreateOrderResponseDtoFixture.buildDefault(orderEntity, List.of(itemDto1, itemDto2));
     private final OrderHistoryDocument orderHistory = OrderHistoryDocumentFixture.buildFromResponseDto(responseDto);

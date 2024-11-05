@@ -19,6 +19,10 @@ public class OrderHistoryMapper {
         return OrderHistoryResponseDto.builder()
                 .id(document.getId())
                 .orderId(document.getOrderId())
+                .amount(document.getAmount())
+                .createdAt(document.getCreatedAt())
+                .historyCreatedAt(document.getHistoryCreatedAt())
+                .orderId(document.getOrderId())
                 .status(document.getStatus())
                 .name(document.getName())
                 .cpf(document.getCpf())
@@ -26,6 +30,7 @@ public class OrderHistoryMapper {
                 .postalCode(document.getPostalCode())
                 .city(document.getCity())
                 .state(document.getState())
+                .attemptedPaymentAt(document.getAttemptedPaymentAt())
                 .items(itemsDto)
                 .build();
     }
