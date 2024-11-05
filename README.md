@@ -2,46 +2,11 @@
 Este projeto é um microsserviço de um sistema distribuido que gerencia um fluxo de criação e aprovação de pedidos.
 
 ## Índice
-- [Instalação](#instalação)
 - [Sobre o Projeto](#sobre-o-projeto)
-
-## Instalação
-
-Para rodar este projeto, você irá precisar de algumas tecnologias que serão listadas a seguir.
-As configurações são definidar com variaveis de ambiente, então você pode definir os dados de acesso como quiser ou 
-alterar no application.yml.
-
-###### Pré-requisitos
-
-Após clonar este repositório, você vai precisar de:
-
-``Java SDK 21``
-
-    Faça o download do java e execute a instalação 
-   
-``PostgreSQL`` 
-
-    docker run -d --name postgres -p 5432:5432  -e POSTGRES_USER=my_postgres -e POSTGRES_PASSWORD=my_postgres -e POSTGRES_DB=msorderdb postgres:latest 
-
-``MongoDB``
-
-    docker run -d --msordermongodb mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=meuusuario -e MONGO_INITDB_ROOT_PASSWORD=minhasenha mongo:latest 
-
-``Docker``
-
-    Instale a intergace gráfica do docker ou instale por linha de comando:
-
-    Passo 1:
-        winget install -e --id Docker.DockerDesktop
-
-    Passo 2:
-        docker --version
-
-    O passo 2 irá confirmar que a instalação ocorreu com sucesso, talvez seja necessário reiniciar seu sistema.
-
-``RabbitMQ``
-        
-    docker run -d --name order-management-order -p 5672:5672 -p 15672:15672 rabbitmq:3-management 
+  - [Funcionalidades](#funcionalidades)
+  - [Tecnologias](#tecnologias)
+  - [Diagrama](#diagrama)
+- [Instalação](#instalação)
 
 
 ## Sobre o Projeto
@@ -86,3 +51,58 @@ perder informações após atualizar o dado no banco SQL;
   mesmo id pode haver mais de um registro, trazendo assim uma lista da mesma ordem, porem a busca é realizada pelo
   orderId, ou seja o id do pedido e não do registro do histórico.
 
+### Tecnologias
+
+Este projeto contempla o uso das seguintes tecnologias:
+
+- Java 21
+- Spring Boot
+- Spring Data & JPA
+- Spring Validation
+- Maven
+- Lombok
+- ModelMapper
+- Arquitetura de Microsserviços
+- RabbitMQ
+- PostgreSQL
+- MongoDB
+- Flyway
+- JUnit
+- Mockito
+
+### Diagrama
+
+A baixo você verá o diagrama de todo o fluxo desse microsserviço e de todo o ecossistema:
+
+![img.png](img.png)
+
+## Instalação
+
+Para rodar este projeto, você irá precisar de algumas tecnologias que serão listadas a seguir.
+As configurações são definidar com variaveis de ambiente, então você pode definir os dados de acesso como quiser ou
+alterar no application.yml.
+
+###### Pré-requisitos
+
+Após clonar este repositório, você vai precisar de:
+
+
+``Docker``
+
+    https://www.docker.com/products/docker-desktop/
+
+Após ter instalado o Docker execute o comando a seguir para configurar seu ambiente automaticamente:
+
+    docker-compose up --build
+
+Essa configuração irá configurar o projeto com as tecnologias a baixo:
+
+``Java``
+
+``Maven``
+
+``PostgreSQL``
+
+``MongoDB``
+
+``RabbitMQ``
