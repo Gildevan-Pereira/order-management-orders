@@ -17,5 +17,4 @@ public class BusinessException extends RuntimeException {
         this.code = message.getCode();
         this.httpStatus = httpStatus;
     }
-
 }

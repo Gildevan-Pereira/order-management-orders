@@ -5,7 +5,7 @@ import com.ms_order.model.dto.request.OrderItemDto;
 
 import java.util.List;
 
-public class CreateOrderRequestDtoFixture {
+public class OrderRequestDtoFixture {
 
     public static CreateOrderRequestDto buildDefault(List<OrderItemDto> list){
         return CreateOrderRequestDto.builder()

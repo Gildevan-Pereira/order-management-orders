@@ -17,6 +17,7 @@ public class OrderHistoryDocumentFixture {
         var item2 = ItemHistoryDocumentFixture.buildDefault(BigDecimal.valueOf(50), 1);
 
         return OrderHistoryDocument.builder()
+                .id("671db4933462832aa668d4f1")
                 .orderId(1)
                 .amount(BigDecimal.valueOf(250.00))
                 .status(OrderStatusEnum.CREATED)

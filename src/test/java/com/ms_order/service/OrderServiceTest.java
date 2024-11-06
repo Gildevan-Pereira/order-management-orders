@@ -66,11 +66,11 @@ class OrderServiceTest {
 
     private final OrderItemDto itemDto1 = OrderItemDtoFixture.buildDefault(2, BigDecimal.valueOf(100.00));
     private final OrderItemDto itemDto2 = OrderItemDtoFixture.buildDefault(1, BigDecimal.valueOf(50.00));
-    private final CreateOrderRequestDto requestDto = CreateOrderRequestDtoFixture.buildDefault(List.of(itemDto1, itemDto2));
+    private final CreateOrderRequestDto requestDto = OrderRequestDtoFixture.buildDefault(List.of(itemDto1, itemDto2));
     private final OrderEntity orderEntity = OrderEntityFixture.buildFromRequestDto(requestDto);
     private final List<ItemEntity> itemsEntity = ItemEntityFixture.buildFromRequestDto(requestDto);
 
-    private final OrderResponseDto responseDto = CreateOrderResponseDtoFixture.buildDefault(orderEntity, List.of(itemDto1, itemDto2));
+    private final OrderResponseDto responseDto = OrderResponseDtoFixture.buildFromEntity(orderEntity, List.of(itemDto1, itemDto2));
     private final OrderHistoryDocument orderHistory = OrderHistoryDocumentFixture.buildFromResponseDto(responseDto);
     private final List<ItemHistoryDocument> itemHistory = ItemHistoryDocumentFixture.buildFromEntity(itemsEntity);
     private final ItemHistoryDocument itemHistory1 = itemHistory.getFirst();
