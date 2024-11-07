@@ -24,7 +24,7 @@ public class OrderItemDtoValidator implements ConstraintValidator<OrderItemDtoVa
         if  (Objects.isNull(itemDto.getDescription()) || !itemDto.getDescription().matches("^[A-Za-z0-9À-ÖØ-öø-ÿ.,'\\s]{5,255}$")) {
             errors.add(MessageEnum.ITEM_DESCRIPTION_INVALID.joinCodeAndMessage());
         }
-        if  (Objects.isNull(itemDto.getUnityPrice()) || itemDto.getUnityPrice().scale() > 2 || itemDto.getUnityPrice().compareTo(BigDecimal.ZERO) < 0) {
+        if  (Objects.isNull(itemDto.getUnityPrice()) || itemDto.getUnityPrice().scale() > 2 || itemDto.getUnityPrice().compareTo(BigDecimal.ZERO) <= 0) {
             errors.add(MessageEnum.ITEM_UNITY_PRICE_INVALID.joinCodeAndMessage());
         }
         if  (Objects.isNull(itemDto.getCount()) || itemDto.getCount() <= 0) {

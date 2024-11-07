@@ -19,8 +19,8 @@ public class OrderSearchFilterDtoFixture {
                 .status(Arrays.asList("CREATED", "PROCESSED", "REJECTED"))
                 .name("John Doe")
                 .cpf("12345678900")
-                .city("New York")
-                .state("NY")
+                .city("São Paulo")
+                .state("SP")
                 .build();
     }
 

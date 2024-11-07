@@ -21,9 +21,8 @@ public class ApiExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleException(Exception ex) {
         log.error("ApiExceptionHandler.handleException: Error received: | message: {}", ex.getMessage());
-        var responseBody = new ErrorResponseDto(
-                List.of(new ErrorDto(MessageEnum.GENERIC_ERROR.getCode(),
-                        MessageEnum.GENERIC_ERROR.getMessage())));
+        var errors = List.of(new ErrorDto(MessageEnum.GENERIC_ERROR.getCode(), MessageEnum.GENERIC_ERROR.getMessage()));
+        var responseBody = new ErrorResponseDto(errors);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
     }
 

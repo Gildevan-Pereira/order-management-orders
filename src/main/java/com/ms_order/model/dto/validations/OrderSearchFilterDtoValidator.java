@@ -46,16 +46,16 @@ public class OrderSearchFilterDtoValidator implements ConstraintValidator<OrderS
             }
         }
 
-        if (Objects.nonNull(filterDto.getName()) && !filterDto.getName().matches("^[A-Za-zÀ-ÖØ-öø-ÿ\\s]{2,255}$")) {
+        if (isFieldBlank(filterDto.getName()) || isFieldInvalid(filterDto.getName(), "^[A-Za-zÀ-ÖØ-öø-ÿ\\s]{2,255}$")) {
             errors.add(MessageEnum.CLIENT_NAME_INVALID.joinCodeAndMessage());
         }
-        if (Objects.nonNull(filterDto.getCpf()) && !filterDto.getCpf().matches("^\\d{11}$")) {
+        if (isFieldBlank(filterDto.getCpf()) || isFieldInvalid(filterDto.getCpf(),"^\\d{11}$")) {
             errors.add(MessageEnum.CPF_INVALID.joinCodeAndMessage());
         }
-        if (Objects.nonNull(filterDto.getCity()) && !filterDto.getCity().matches("^[A-Za-zÀ-ÖØ-öø-ÿ\\s]{3,50}$")) {
+        if (isFieldBlank(filterDto.getCity()) || isFieldInvalid(filterDto.getCity(), "^[A-Za-zÀ-ÖØ-öø-ÿ\\s]{3,50}$")) {
             errors.add(MessageEnum.CITY_INVALID.joinCodeAndMessage());
         }
-        if (Objects.nonNull(filterDto.getState()) && !filterDto.getState().matches("[^A-Za-z]{2}$")) {
+        if (isFieldBlank(filterDto.getState()) || isFieldInvalid(filterDto.getState(),"^(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RO|RR|RS|SC|SP|SE|TO)$")) {
             errors.add(MessageEnum.STATE_INVALID.joinCodeAndMessage());
         }
 
@@ -72,5 +72,16 @@ public class OrderSearchFilterDtoValidator implements ConstraintValidator<OrderS
         for (String error : errors) {
             context.buildConstraintViolationWithTemplate(error).addConstraintViolation();
         }
+    }
+
+    private boolean isFieldBlank(String field) {
+        return Objects.nonNull(field) && field.isBlank();
+    }
+
+    private boolean isFieldInvalid(String field, String regex) {
+        if (field == null) {
+            return false;
+        }
+        return !field.matches(regex);
     }
 }

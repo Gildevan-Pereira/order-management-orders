@@ -117,7 +117,7 @@ class OrderControllerTest {
 
 
     @Test
-    void createOrder() throws Exception {
+    void createOrderSuccessful() throws Exception {
         var item1 = OrderItemDtoFixture.buildDefault(2, BigDecimal.valueOf(100));
         var item2 = OrderItemDtoFixture.buildDefault(1, BigDecimal.valueOf(50));
         var request = OrderRequestDtoFixture.buildDefault(List.of(item1, item2));
@@ -228,7 +228,7 @@ class OrderControllerTest {
     }
 
     @Test
-    void findOrderHistoryByOrderId() throws Exception {
+    void findOrderHistoryByOrderIdSuccessful() throws Exception {
         Integer id = 1;
         var responseDto = OrderHistoryMapper.toResponseDto(OrderHistoryDocumentFixture.buildDefault());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/orders/history/{id}", id);

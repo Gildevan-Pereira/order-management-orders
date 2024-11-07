@@ -8,6 +8,7 @@ import java.util.List;
 public class OrderRequestDtoFixture {
 
     public static CreateOrderRequestDto buildDefault(List<OrderItemDto> list){
+
         return CreateOrderRequestDto.builder()
                 .name("Jon Doe")
                 .cpf("12345678901")
