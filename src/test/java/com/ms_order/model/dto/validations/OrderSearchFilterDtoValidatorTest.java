@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,6 +84,56 @@ class OrderSearchFilterDtoValidatorTest {
     }
 
     @Test
+    void shouldReturnFalseWhenStartDateIsAfterEndDate() {
+        var request = OrderSearchFilterDto.builder()
+                .startDate(LocalDate.of(2024, 1, 1))
+                .endDate(LocalDate.of(2023, 1, 1))
+                .build();
+
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenMinAmountIsNotNullAndMaxAmountIsNull() {
+        var request = OrderSearchFilterDto.builder()
+                .minAmount(BigDecimal.valueOf(100))
+                .build();
+
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenMinAmountIsNullAndMaxAmountIsNotNull() {
+        var request = OrderSearchFilterDto.builder()
+                .maxAmount(BigDecimal.valueOf(100))
+                .build();
+
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenMinAmountIsAfterMaxAmount() {
+        var request = OrderSearchFilterDto.builder()
+                .minAmount(BigDecimal.valueOf(150))
+                .maxAmount(BigDecimal.valueOf(100))
+                .build();
+
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
     void shouldReturnFalseWhenNameHasSpaceBlank() {
         var request = OrderSearchFilterDto.builder()
                 .name("  ")
@@ -93,4 +144,80 @@ class OrderSearchFilterDtoValidatorTest {
         assertThat(response).isFalse();
     }
 
+    @Test
+    void shouldReturnFalseWhenNameIsInvalid() {
+        var request = OrderSearchFilterDto.builder()
+                .name("1234")
+                .build();
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenCpfHasSpaceBlank() {
+        var request = OrderSearchFilterDto.builder()
+                .cpf("  ")
+                .build();
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenCpfIsInvalid() {
+        var request = OrderSearchFilterDto.builder()
+                .cpf("abcd")
+                .build();
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenCityHasSpaceBlank() {
+        var request = OrderSearchFilterDto.builder()
+                .city("  ")
+                .build();
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenCityIsInvalid() {
+        var request = OrderSearchFilterDto.builder()
+                .city("123")
+                .build();
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenStateHasSpaceBlank() {
+        var request = OrderSearchFilterDto.builder()
+                .state("  ")
+                .build();
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenStateIsInvalid() {
+        var request = OrderSearchFilterDto.builder()
+                .state("123")
+                .build();
+        when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(violationBuilder);
+        Boolean response = validator.isValid(request, context);
+
+        assertThat(response).isFalse();
+    }
 }

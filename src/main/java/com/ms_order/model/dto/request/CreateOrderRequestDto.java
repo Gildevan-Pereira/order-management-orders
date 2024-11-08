@@ -1,15 +1,14 @@
 package com.ms_order.model.dto.request;
 
 import com.ms_order.model.dto.validations.CreateOrderRequestDtoValidation;
+import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Data
+@Generated("lombok")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
