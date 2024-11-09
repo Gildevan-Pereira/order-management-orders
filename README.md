@@ -74,5 +74,7 @@ no diretório raiz do projeto:
 
     docker-compose up -d
 
-No arquivo ``application.yml`` você encontrará diversas variaveis de ambiente que podem ser configuradas de acordo com as 
+Após isso abra o projeto em uma IDE de sua preferência e execute.
+
+> Obs.: No arquivo ``application.yml`` você encontrará diversas variaveis de ambiente que podem ser configuradas de acordo com as 
 suas necessidades, porém, todas já possuem valores padrão que correspondem ao que está configurado nos containers.
