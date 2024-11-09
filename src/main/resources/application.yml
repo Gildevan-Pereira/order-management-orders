@@ -29,19 +29,19 @@ spring:
     baseline_on_migrate: false
 
   rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
-    max_retry: ${RABBITMQ_RETRY_COUNT:3}
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USERNAME:guest}
+    password: ${RABBIT_PASSWORD:guest}
+    max_retry: 3
     queues:
       update_order:
-        queue: ${RABBITMQ_QUEUE:update_order_queue}
-        retry_queue: ${RABBITMQ_RETRY_QUEUE:update_order_retry_queue}
-        dead_queue: ${RABBITMQ_DEAD_QUEUE:update_order_dead_queue}
+        queue: update_order_queue
+        retry_queue: update_order_retry_queue
+        dead_queue: update_order_dead_queue
     exchanges:
-      created_order_exchange: ${RABBITMQ_CREATED_EXCHANGE:created_order_exchange}
-      update_order_exchange: ${RABBITMQ_UPDATE_EXCHANGE:update_order_exchange}
+      created_order_exchange: created_order_exchange
+      update_order_exchange: update_order_exchange
     routing_keys:
-      created_order_routing_key: ${RABBITMQ_CREATED_ROUTING_KEY:created_order_routing_key}
-      update_order_routing_key: ${RABBITMQ_UPDATE_ROUTING_KEY:update_order_routing_key}
+      created_order_routing_key: created_order_routing_key
+      update_order_routing_key: update_order_routing_key

@@ -1,68 +1,64 @@
 # Microsserviço de Criação de Pedido 
-Este projeto é um microsserviço de um sistema distribuido que gerencia um fluxo de criação e aprovação de pedidos.
+Este projeto é um microsserviço responsável pela criação de pedidos e faz parte de um sistema distribuído de gerenciamento
+de pedidos.
 
-## Índice
-- [Sobre o Projeto](#sobre-o-projeto)
-  - [Funcionalidades](#funcionalidades)
-  - [Tecnologias](#tecnologias)
-  - [Diagrama](#diagrama)
-- [Instalação](#instalação)
+# Sobre o Fluxo
+O sistema recebe uma requisição HTTP para criação de um pedido, registra no banco principal e no banco de histórico,
+e por fim, publica uma mensagem para a fila do RabbitMQ que será consumida pelo microsserviço de pagamentos. Este, por
+sua vez, deverá devolver um evento de atualização de status do pedido após o processamento do pagamento, e assim será 
+atualizado o status e data do processamento no banco principal e no banco de histórico.
 
-
-## Sobre o Projeto
-Quando o pedido é criado, um evento é disparado, enviando uma mensagem para a fila do RabbitMQ, que será consumida pelo
-microsserviço de pagamentos que em seguida irá devolver um evento de atualização de status do pedido. 
-
-Durante esse processo, também é salvo no banco NoSql, o histórico da ordem, que são exatamente os mesmos dados.
-Isso acontece tanto na criação do pedido quanto na atualização do status. Isso serve para garantir que cada pedido tenha
-um histórico do estado anterior a qualquer atualização, assim deixando uma forma de auditar o fluxo da transação sem 
-perder informações após atualizar o dado no banco SQL;
-
-
-### Funcionalidades
+# Funcionalidades
 - Criar Pedido 
 
-> Salva o pedido no banco de dados e publica o evento de criação de ordem no rabbitmq
+> Salva o pedido no banco de dados e publica um evento de ordem criada no rabbitmq
 
 - Atualizar pedido
 
-> Recebe o evento de confirmação ou rejeição do pagamento e atualiza a ordem no banco de dados.
-  Se o dado vier inválido, será enviado o evento para uma fila morta, mas se houver outro problema como falha de 
-  conexão, a aplicação irá fazer a retentativa 3 vezes e depois enviará para a fila morta.
+> Recebe um evento com o resultado do processamento do pagamento e atualiza a ordem nos bancos de dados.
+  Se ocorrer um erro no processamento da mensagem, o microsserviço possui uma resiliência para executar até 3 tentativas.
+  Após isso, se ainda não houver sucesso, a mensagem é encaminhada para uma fila morta monitorada.
 
 - Salvar Histórico
 
-> O histórico é o mesmo objeto que é salvo no banco SQL, é um registro de todas as alterações que a ordem sofreu.
-  O salvamento acontece na criação de ordem e na atualização após a confirmação ou recusa do pagamento, portanto 
-  não existe um método específico para essa ação.
+> O registro de histórico é mantém todas as atualizações de uma ordem desde a sua criação até o resultado final.
+  Estes registros são mantidos em um banco secundário não relacional, para não comprometer o banco principal da aplicação
+  com grandes volumes de dados de históricos.
 
 - Busca por ID
         
-> A busca por ID tráz a transação que esteja associada ao ID informado
+> A busca por ID retorna a ordem que esteja associada ao ID informado.
 
-- Busca por Filtro
+- Busca por Filtros
 
-> A busca por filtro é realizada passando filtros específicos no parãmetro da requisição. 
-  O filtro trará todos os registros que possuídem as informações passadas no filtro
+> A busca por filtros é realizada passando combinação de filtros específicos como ids, data, valor, etc. 
+  A consulta retorna os dados paginados e o tamanho e ordenação dos resultados também podem ser enviados na requisição.
 
 - Busca de Histórico por ID- 
 
-> O resultado da busca de histórico por ID, é uma lista que contém o mesmo objeto em estados diferentes, então o 
-  mesmo id pode haver mais de um registro, trazendo assim uma lista da mesma ordem, porem a busca é realizada pelo
-  orderId, ou seja o id do pedido e não do registro do histórico.
+> A busca de histórico por ID retorna todos os registros de uma ordem específica desde sua criação até o estado final.
 
-### Tecnologias
+# Diagramas
 
-Este projeto contempla o uso das seguintes tecnologias:
+A baixo segue o diagrama da arquitetura do sistema:
+
+![img.png](src/main/resources/img/order_management.png)
+
+Seque o diagrama do modelo de dados com as entidades deste microsserviço:
+
+![img.png](src/main/resources/img/db-diagram.png)
+
+# Tecnologias
+
+Este projeto utiliza as seguintes tecnologias:
 
 - Java 21
 - Spring Boot
 - Spring Data & JPA
-- Spring Validation
+- Bean Validation
 - Maven
 - Lombok
 - ModelMapper
-- Arquitetura de Microsserviços
 - RabbitMQ
 - PostgreSQL
 - MongoDB
@@ -70,39 +66,13 @@ Este projeto contempla o uso das seguintes tecnologias:
 - JUnit
 - Mockito
 
-### Diagrama
+# Como Executar
 
-A baixo você verá o diagrama de todo o fluxo desse microsserviço e de todo o ecossistema:
+Após clonar este repositório, você vai precisar ter instalado o [Docker](#https://www.docker.com/products/docker-desktop/)
+e em seguida criar em seu ambiente local, os containers os bancos de dados e o rabbitmq. Para isso use o comando abaixo
+no diretório raiz do projeto:
 
-![img.png](img.png)
+    docker-compose up -d
 
-## Instalação
-
-Para rodar este projeto, você irá precisar de algumas tecnologias que serão listadas a seguir.
-As configurações são definidar com variaveis de ambiente, então você pode definir os dados de acesso como quiser ou
-alterar no application.yml.
-
-###### Pré-requisitos
-
-Após clonar este repositório, você vai precisar de:
-
-
-``Docker``
-
-    https://www.docker.com/products/docker-desktop/
-
-Após ter instalado o Docker execute o comando a seguir para configurar seu ambiente automaticamente:
-
-    docker-compose up --build
-
-Essa configuração irá configurar o projeto com as tecnologias a baixo:
-
-``Java``
-
-``Maven``
-
-``PostgreSQL``
-
-``MongoDB``
-
-``RabbitMQ``
+No arquivo ``application.yml`` você encontrará diversas variaveis de ambiente que podem ser configuradas de acordo com as 
+suas necessidades, porém, todas já possuem valores padrão que correspondem ao que está configurado nos containers.

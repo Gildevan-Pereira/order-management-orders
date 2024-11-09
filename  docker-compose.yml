@@ -1,43 +1,8 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
-    container_name: spring_app
-    ports:
-      - '${SERVER_PORT:8081}:8081'
-    environment:
-      SERVER_PORT: ${SERVER_PORT:8081}
-
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_NAME: msorderdb
-      POSTGRES_USERNAME: MS_ORDERS
-      POSTGRES_PASSWORD: MS_ORDERS
-
-      MONGODB_HOST: mongo
-      MONGODB_PORT: 27017
-      MONGODB_NAME: msordermongodb
-
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-      RABBITMQ_USERNAME: guest
-      RABBITMQ_PASSWORD: guest
-      RABBITMQ_RETRY_COUNT: 3
-      RABBITMQ_QUEUE: update_order_queue
-      RABBITMQ_RETRY_QUEUE: update_order_retry_queue
-      RABBITMQ_DEAD_QUEUE: update_order_dead_queue
-      RABBITMQ_CREATED_EXCHANGE: created_order_exchange
-      RABBITMQ_UPDATE_EXCHANGE: update_order_exchange
-      RABBITMQ_CREATED_ROUTING_KEY: created_order_routing_key
-      RABBITMQ_UPDATE_ROUTING_KEY: update_order_routing_key
-    depends_on:
-      - postgres
-      - mongo
-      - rabbitmq
-
   postgres:
-    image: 'postgres:42.7.4'
+    image: 'postgres:latest'
     container_name: postgres
     ports:
       - '5432:5432'
@@ -59,7 +24,7 @@ services:
       - mongo_data:/data/db
 
   rabbitmq:
-    image: 'rabbitmq:3-management'
+    image: 'rabbitmq:3.9-management-alpine'
     container_name: rabbitmq
     ports:
       - '5672:5672'
@@ -67,7 +32,10 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+        - rabbitmq_data:/var/lib/rabbitmq
 
 volumes:
   postgres_data:
   mongo_data:
+  rabbitmq_data:
