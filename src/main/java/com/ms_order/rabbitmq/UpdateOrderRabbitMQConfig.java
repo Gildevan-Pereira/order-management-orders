@@ -8,20 +8,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UpdateOrderRabbitMQConfig {
 
-    @Value("${spring.rabbitmq.exchanges.update_order_exchange}")
-    private String exchange;
+    private final String exchange;
+    private final String routingKey;
+    private final String queue;
+    private final String retryQueue;
+    private final String deadQueue;
 
-    @Value("${spring.rabbitmq.routing_keys.update_order_routing_key}")
-    private String routingKey;
-
-    @Value("${spring.rabbitmq.queues.update_order.queue}")
-    private String queue;
-
-    @Value("${spring.rabbitmq.queues.update_order.retry_queue}")
-    private String retryQueue;
-
-    @Value("${spring.rabbitmq.queues.update_order.dead_queue}")
-    private String deadQueue;
+    public UpdateOrderRabbitMQConfig(
+            @Value("${spring.rabbitmq.exchanges.update_order_exchange}") String exchange,
+            @Value("${spring.rabbitmq.routing_keys.update_order_routing_key}") String routingKey,
+            @Value("${spring.rabbitmq.queues.update_order.queue}") String queue,
+            @Value("${spring.rabbitmq.queues.update_order.retry_queue}") String retryQueue,
+            @Value("${spring.rabbitmq.queues.update_order.dead_queue}") String deadQueue
+    ) {
+        this.exchange = exchange;
+        this.routingKey = routingKey;
+        this.queue = queue;
+        this.retryQueue = retryQueue;
+        this.deadQueue = deadQueue;
+    }
 
     @Bean
     public TopicExchange createExchange() {

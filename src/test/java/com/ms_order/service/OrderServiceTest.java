@@ -12,7 +12,7 @@ import com.ms_order.model.enums.OrderStatusEnum;
 import com.ms_order.model.mongodb.ItemHistoryDocument;
 import com.ms_order.model.mongodb.OrderHistoryDocument;
 import com.ms_order.rabbitmq.CreateOrderPublisher;
-import com.ms_order.rabbitmq.dto.OrderCreatedDto;
+import com.ms_order.model.dto.event.OrderCreatedDto;
 import com.ms_order.repository.ItemRepository;
 import com.ms_order.repository.OrderHistoryRepository;
 import com.ms_order.repository.OrderRepository;

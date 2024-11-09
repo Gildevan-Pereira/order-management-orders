@@ -1,6 +1,6 @@
 package com.ms_order.fixture;
 
-import com.ms_order.rabbitmq.dto.OrderUpdatedDto;
+import com.ms_order.model.dto.event.OrderUpdatedDto;
 
 import java.time.LocalDateTime;
 

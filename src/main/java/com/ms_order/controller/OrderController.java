@@ -24,6 +24,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
+//    TODO: Ajustar serialização do LocalDateTime no json
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody @Valid CreateOrderRequestDto dto) {
         log.info("OrderController.createOrder - Request received | requestDto: {}", dto);

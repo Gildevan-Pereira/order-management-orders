@@ -1,4 +1,4 @@
-package com.ms_order.rabbitmq.dto;
+package com.ms_order.model.dto.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

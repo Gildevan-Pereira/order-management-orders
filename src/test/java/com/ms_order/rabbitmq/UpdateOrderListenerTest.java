@@ -2,7 +2,7 @@ package com.ms_order.rabbitmq;
 
 import com.ms_order.exception.BusinessException;
 import com.ms_order.exception.InternalException;
-import com.ms_order.rabbitmq.dto.OrderUpdatedDto;
+import com.ms_order.model.dto.event.OrderUpdatedDto;
 import com.ms_order.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

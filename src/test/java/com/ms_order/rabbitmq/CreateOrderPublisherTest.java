@@ -2,7 +2,7 @@ package com.ms_order.rabbitmq;
 
 import com.ms_order.exception.InternalException;
 import com.ms_order.messages.MessageEnum;
-import com.ms_order.rabbitmq.dto.OrderCreatedDto;
+import com.ms_order.model.dto.event.OrderCreatedDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
