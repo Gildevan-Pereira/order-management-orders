@@ -2,6 +2,10 @@
 Este projeto é um microsserviço responsável pela criação de pedidos e faz parte de um sistema distribuído de gerenciamento
 de pedidos.
 
+Para acessar a documentação swagger da aplicação acesse o link abaixo:
+
+``https://gildevan-pereira.github.io/order-management-orders-swagger/``
+
 # Sobre o Fluxo
 O sistema recebe uma requisição HTTP para criação de um pedido, registra no banco principal e no banco de histórico,
 e por fim, publica uma mensagem para a fila do RabbitMQ que será consumida pelo microsserviço de pagamentos. Este, por

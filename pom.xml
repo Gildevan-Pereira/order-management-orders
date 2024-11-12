@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.ms-order</groupId>
 	<artifactId>order-management-order</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>`1.0.0`</version>
 	<name>ms-order</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Api de gerenciamento de pedidos</description>
 	<url/>
 	<licenses>
 		<license/>
