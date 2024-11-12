@@ -4,7 +4,7 @@ de pedidos.
 
 Para acessar a documentação swagger da aplicação acesse o link abaixo:
 
-    https://gildevan-pereira.github.io/order-management-orders-swagger/
+  [Documentação de Integração Swagger](https://gildevan-pereira.github.io/order-management-orders-swagger/)
 
 # Sobre o Fluxo
 O sistema recebe uma requisição HTTP para criação de um pedido, registra no banco principal e no banco de histórico,
