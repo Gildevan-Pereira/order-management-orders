@@ -72,7 +72,7 @@ Este projeto utiliza as seguintes tecnologias:
 
 # Como Executar
 
-Após clonar este repositório, você vai precisar ter instalado o [Docker](#https://www.docker.com/products/docker-desktop/)
+Após clonar este repositório, você vai precisar ter instalado o [Docker](https://www.docker.com/products/docker-desktop/)
 e em seguida criar em seu ambiente local, os containers os bancos de dados e o rabbitmq. Para isso use o comando abaixo
 no diretório raiz do projeto:
 
