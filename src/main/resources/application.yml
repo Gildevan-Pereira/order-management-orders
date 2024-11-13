@@ -36,10 +36,9 @@ spring:
     max_retry: 3
     queues:
       update_order:
-#      TODO: criar prefixos para os nomes das filas
-        queue: update_order_queue
-        retry_queue: update_order_retry_queue
-        dead_queue: update_order_dead_queue
+        queue: order_management_orders_processed_payment_queue
+        retry_queue: order_management_orders_update_order_retry_queue
+        dead_queue: order_management_orders_update_order_dead_queue
     exchanges:
       created_order_exchange: created_order_exchange
       update_order_exchange: update_order_exchange

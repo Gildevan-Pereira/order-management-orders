@@ -45,7 +45,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findByFilters(filterDto, pageable));
     }
 
-    @GetMapping("history/{id}")
+    @GetMapping("/{id}/history")
     public ResponseEntity<List<OrderHistoryResponseDto>> findOrderHistoryByOrderId(@PathVariable Integer id) {
         log.info("OrderController.getOrderHistoryById - Request received | id: {}", id);
         var response = orderService.findOrderHistoryByOrderId(id);
