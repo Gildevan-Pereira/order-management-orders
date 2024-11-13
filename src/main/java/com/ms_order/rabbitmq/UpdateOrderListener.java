@@ -21,7 +21,7 @@ public class UpdateOrderListener extends BaseListener {
     protected UpdateOrderListener(
             OrderService orderService,
             RabbitTemplate rabbitTemplate,
-            @Value("${spring.rabbitmq.exchanges.update_order_exchange}")
+            @Value("${spring.rabbitmq.exchanges.order_management_events}")
             String exchange,
             @Value("${spring.rabbitmq.queues.update_order.retry_queue}")
             String retryRoutingKey,

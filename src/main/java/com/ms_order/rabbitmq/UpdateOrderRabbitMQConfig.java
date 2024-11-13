@@ -15,7 +15,7 @@ public class UpdateOrderRabbitMQConfig {
     private final String deadQueue;
 
     public UpdateOrderRabbitMQConfig(
-            @Value("${spring.rabbitmq.exchanges.update_order_exchange}") String exchange,
+            @Value("${spring.rabbitmq.exchanges.order_management_events}") String exchange,
             @Value("${spring.rabbitmq.routing_keys.update_order_routing_key}") String routingKey,
             @Value("${spring.rabbitmq.queues.update_order.queue}") String queue,
             @Value("${spring.rabbitmq.queues.update_order.retry_queue}") String retryQueue,

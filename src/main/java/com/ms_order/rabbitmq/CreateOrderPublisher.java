@@ -21,7 +21,7 @@ public class CreateOrderPublisher {
     private final String routingKey;
 
     public CreateOrderPublisher(RabbitTemplate rabbitTemplate,
-                                @Value("${spring.rabbitmq.exchanges.created_order_exchange}")
+                                @Value("${spring.rabbitmq.exchanges.order_management_events}")
                                 String exchange,
                                 @Value("${spring.rabbitmq.routing_keys.created_order_routing_key}")
                                 String routingKey) {

@@ -25,7 +25,7 @@ class CreateOrderPublisherTest {
     @Mock
     private RabbitTemplate rabbitTemplate;
 
-    private final String exchange = "created_order_exchange";
+    private final String exchange = "order_management_events";
     private final String routingKey = "created_order_routing_key";
 
     @BeforeEach
