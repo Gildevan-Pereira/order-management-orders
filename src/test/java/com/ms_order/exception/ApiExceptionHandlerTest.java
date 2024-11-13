@@ -56,7 +56,22 @@ class ApiExceptionHandlerTest {
                 .isEqualTo(MessageEnum.ORDER_NOT_FOUND.getCode());
         assertThat(response.getBody().getErrors().getFirst().getMessage())
                 .isEqualTo(String.format(MessageEnum.ORDER_NOT_FOUND.getMessage(), 1));
+    }
 
+    @Test
+    void handleBusinessExceptionWhenMessageParamIsNull() {
+        BusinessException businessException = new BusinessException(MessageEnum.ORDER_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+
+        var response = exceptionHandler.handleBusinessException(businessException);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).isInstanceOf(ErrorResponseDto.class);
+        assertThat(response.getBody().getErrors()).isNotEmpty();
+        assertThat(response.getBody().getErrors().getFirst().getCode())
+                .isEqualTo(MessageEnum.ORDER_NOT_FOUND.getCode());
+        assertThat(response.getBody().getErrors().getFirst().getMessage())
+                .isEqualTo(MessageEnum.ORDER_NOT_FOUND.getMessage());
     }
 
     @Test

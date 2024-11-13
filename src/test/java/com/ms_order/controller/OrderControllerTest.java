@@ -231,7 +231,7 @@ class OrderControllerTest {
     void findOrderHistoryByOrderIdSuccessful() throws Exception {
         Integer id = 1;
         var responseDto = OrderHistoryMapper.toResponseDto(OrderHistoryDocumentFixture.buildDefault());
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/orders/history/{id}", id);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/orders/{id}/history", id);
 
         when(orderService.findOrderHistoryByOrderId(id)).thenReturn(List.of(responseDto));
 
@@ -247,7 +247,7 @@ class OrderControllerTest {
     @Test
     void findOrderHistoryByOrderIdError() throws Exception {
         Integer id = 1;
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/orders/history/{id}", id);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/orders/{id}/history", id);
 
         when(orderService.findOrderHistoryByOrderId(id))
                 .thenThrow(new BusinessException(MessageEnum.ORDER_HISTORY_NOT_FOUND, id.toString(), HttpStatus.NOT_FOUND));
