@@ -1,5 +1,6 @@
 package com.ms_order.model.dto.request;
 
+import com.ms_order.model.dto.validations.OrderItemDtoValidation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@OrderItemDtoValidation
 public class OrderItemDto {
 
     private String name;
@@ -20,4 +22,5 @@ public class OrderItemDto {
     private BigDecimal unityPrice;
 
     private Integer count;
+
 }

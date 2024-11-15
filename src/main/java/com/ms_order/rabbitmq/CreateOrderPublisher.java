@@ -1,46 +1,43 @@
 package com.ms_order.rabbitmq;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ms_order.exception.ErrorToParseStringException;
-import com.ms_order.rabbitmq.dto.OrderCreatedDto;
-import lombok.RequiredArgsConstructor;
+import com.ms_order.exception.InternalException;
+import com.ms_order.messages.MessageEnum;
+import com.ms_order.model.dto.event.OrderCreatedDto;
+import com.ms_order.util.JsonParserUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class CreateOrderPublisher {
 
     private final RabbitTemplate rabbitTemplate;
-    private final ObjectMapper objectMapper;
 
-    @Value("${mq.exchanges.order_exchange}")
-    private String orderExchange;
+    private final  String exchange;
 
-    @Value("${mq.routing-keys.order_routing_key}")
-    private String orderRoutingKey;
+    private final String routingKey;
+
+    public CreateOrderPublisher(RabbitTemplate rabbitTemplate,
+                                @Value("${spring.rabbitmq.exchanges.order_management_events}")
+                                String exchange,
+                                @Value("${spring.rabbitmq.routing_keys.created_order_routing_key}")
+                                String routingKey) {
+        this.rabbitTemplate = rabbitTemplate;
+        this.exchange = exchange;
+        this.routingKey = routingKey;
+    }
 
     public void send(OrderCreatedDto dto) {
         try {
-            var converted = convertObjectToString(dto);
-            rabbitTemplate.convertAndSend(orderExchange, orderRoutingKey, converted);
-        } catch (AmqpException e) {
+            var json = JsonParserUtil.toJson(dto);
+            rabbitTemplate.convertAndSend(exchange, routingKey, json);
+            log.info("CreateOrderPublisher.send - Order created event sent | data: {}", json);
+        } catch (Exception e) {
             log.error("CreateOrderPublisher.send - Error while sending message", e);
+            throw new InternalException(MessageEnum.ERROR_PUBLISHER, HttpStatus.BAD_GATEWAY);
         }
     }
-
-    public String convertObjectToString(OrderCreatedDto dto) {
-        try {
-            return objectMapper.writeValueAsString(dto);
-        } catch (JsonProcessingException e) {
-            throw new ErrorToParseStringException(e.getMessage());
-        }
-    }
-
-
 }

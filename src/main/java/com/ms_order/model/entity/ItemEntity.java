@@ -2,15 +2,15 @@ package com.ms_order.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "item_table")
 @SuperBuilder
@@ -22,9 +22,8 @@ public class ItemEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JoinColumn(name = "order_id")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private OrderEntity order;
+    @Column(name = "order_id")
+    private Integer order;
 
     private String name;
 

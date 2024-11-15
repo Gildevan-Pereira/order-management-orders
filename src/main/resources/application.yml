@@ -7,8 +7,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:msorderdb}
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    username: ${POSTGRES_USERNAME:MS_ORDERS}
+    password: ${POSTGRES_PASSWORD:MS_ORDERS}
     driver-class-name: org.postgresql.Driver
     jpa:
       hibernate:
@@ -29,16 +29,18 @@ spring:
     baseline_on_migrate: false
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-
-mq:
-  queues:
-    create_order_queue: create_order_queue
-    update_order_queue: update_order_queue
-  exchanges:
-    order_exchange: order_exchange
-  routing-keys:
-    order_routing_key: order_routing_key
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USERNAME:guest}
+    password: ${RABBIT_PASSWORD:guest}
+    max_retry: 3
+    queues:
+      update_order:
+        queue: order_management_orders_processed_payment_queue
+        retry_queue: order_management_orders_update_order_retry_queue
+        dead_queue: order_management_orders_update_order_dead_queue
+    exchanges:
+      order_management_events: order_management_events
+    routing_keys:
+      created_order_routing_key: created_order_routing_key
+      update_order_routing_key: update_order_routing_key
