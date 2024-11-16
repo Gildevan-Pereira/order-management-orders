@@ -37,8 +37,8 @@ spring:
     queues:
       update_order:
         queue: order_management_orders_processed_payment_queue
-        retry_queue: order_management_orders_update_order_retry_queue
-        dead_queue: order_management_orders_update_order_dead_queue
+        retry_queue: order_management_orders_processed_payment_retry_queue
+        dead_queue: order_management_orders__processed_payment_dead_queue
     exchanges:
       order_management_events: order_management_events
     routing_keys:
