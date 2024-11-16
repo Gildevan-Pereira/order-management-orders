@@ -43,4 +43,4 @@ spring:
       order_management_events: order_management_events
     routing_keys:
       created_order_routing_key: created_order_routing_key
-      update_order_routing_key: update_order_routing_key
+      processed_payment_routing_key: processed_payment_routing_key

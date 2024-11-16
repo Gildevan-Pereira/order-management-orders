@@ -2,7 +2,9 @@
 Este projeto é um microsserviço responsável pela criação de pedidos e faz parte de um sistema distribuído de gerenciamento
 de pedidos.
 
-Acesse a [Documentação de Integração Swagger](https://gildevan-pereira.github.io/order-management-orders-swagger/)
+Acesse a [Documentação de Integração Swagger.](https://gildevan-pereira.github.io/order-management-orders-swagger/)
+
+Acesse a [Documentação dos Serviços Assíncronos em AsyncApi.](https://gildevan-pereira.github.io/order-management-orders-async-api/)
 
 # Sobre o Fluxo
 O sistema recebe uma requisição HTTP para criação de um pedido, registra no banco principal e no banco de histórico,
