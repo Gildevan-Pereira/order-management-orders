@@ -2,9 +2,10 @@
 Este projeto é um microsserviço responsável pela criação de pedidos e faz parte de um sistema distribuído de gerenciamento
 de pedidos.
 
-Acesse a [Documentação de Integração Swagger.](https://gildevan-pereira.github.io/order-management-orders-swagger/)
+# Documentações das APIs
 
-Acesse a [Documentação dos Serviços Assíncronos em AsyncApi.](https://gildevan-pereira.github.io/order-management-orders-async-api/)
+* [Documentação Swagger da API REST](https://gildevan-pereira.github.io/order-management-orders-swagger/)
+* [⁠Documentação AsyncAPI dos eventos RabbitMQ](https://gildevan-pereira.github.io/order-management-orders-async-api/)
 
 # Sobre o Fluxo
 O sistema recebe uma requisição HTTP para criação de um pedido, registra no banco principal e no banco de histórico,
@@ -13,6 +14,7 @@ sua vez, deverá devolver um evento de atualização de status do pedido após o
 atualizado o status e data do processamento no banco principal e no banco de histórico.
 
 # Funcionalidades
+
 - Criar Pedido 
 
 > Salva o pedido no banco de dados e publica um evento de ordem criada no rabbitmq
