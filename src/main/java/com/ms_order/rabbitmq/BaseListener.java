@@ -13,7 +13,7 @@ public abstract class BaseListener {
     private final String deadRoutingKey;
     private final Integer maxRetry;
 
-    protected   BaseListener(RabbitTemplate rabbitTemplate, String exchange,
+    protected BaseListener(RabbitTemplate rabbitTemplate, String exchange,
                            String retryRoutingKey, String deadRoutingKey, Integer maxRetry){
         this.rabbitTemplate = rabbitTemplate;
         this.exchange = exchange;
