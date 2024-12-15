@@ -42,7 +42,7 @@ public class UpdateOrderRabbitMQConfig {
     public Queue retryQueue() {
         return QueueBuilder.durable(retryQueue)
                 .withArgument("x-dead-letter-exchange", exchange)
-                .withArgument("x-dead-letter-routing-key", routingKey)
+                .withArgument("x-dead-letter-routing-key", queue)
                 .withArgument("x-message-ttl", 5)
                 .build();
     }

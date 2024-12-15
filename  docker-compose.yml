@@ -3,23 +3,26 @@ version: '3.8'
 services:
   postgres:
     image: 'postgres:latest'
-    container_name: postgres
+    container_name: order-management-orders-postgres
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_DB: msorderdb
-      POSTGRES_USER: MS_ORDERS
-      POSTGRES_PASSWORD: MS_ORDERS
+      POSTGRES_DB: order_management_db
+      POSTGRES_USER: order_management
+      POSTGRES_PASSWORD: order_management
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER"]
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
 
-  mongo:
+  mongodb:
     image: 'mongo:7.0.9'
-    container_name: mongo
+    container_name: order_management_mongo_db
     ports:
       - '27017:27017'
     environment:
-      MONGO_INITDB_DATABASE: msordermongodb
+      MONGO_INITDB_DATABASE: order_management_db
     volumes:
       - mongo_data:/data/db
 
