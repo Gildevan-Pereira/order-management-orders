@@ -6,9 +6,9 @@ spring:
     name: ms-order
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:msorderdb}
-    username: ${POSTGRES_USERNAME:MS_ORDERS}
-    password: ${POSTGRES_PASSWORD:MS_ORDERS}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:order_management_db}
+    username: ${POSTGRES_USERNAME:order_management}
+    password: ${POSTGRES_PASSWORD:order_management}
     driver-class-name: org.postgresql.Driver
     jpa:
       hibernate:
@@ -21,7 +21,7 @@ spring:
     mongodb:
       host: ${MONGODB_HOST:localhost}
       port: ${MONGODB_PORT:27017}
-      database: ${MONGODB_NAME:msordermongodb}
+      database: ${MONGODB_NAME:order_management_db}
       auto-index-creation: true
 
   flyway:

@@ -3,13 +3,15 @@ version: '3.8'
 services:
   postgres:
     image: 'postgres:latest'
-    container_name: order-management-postgres
+    container_name: order-management-orders-postgres
     ports:
       - '5432:5432'
     environment:
       POSTGRES_DB: order_management_db
       POSTGRES_USER: order_management
       POSTGRES_PASSWORD: order_management
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER"]
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
@@ -20,12 +22,9 @@ services:
     ports:
       - '27017:27017'
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
       MONGO_INITDB_DATABASE: order_management_db
     volumes:
       - mongo_data:/data/db
-      - ./init-scripts:/docker-entrypoint-initdb.d:ro
 
   rabbitmq:
     image: 'rabbitmq:3.9-management-alpine'

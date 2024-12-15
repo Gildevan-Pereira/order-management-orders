@@ -1,5 +1,5 @@
 -- Criar usuário adicional
-CREATE USER MS_ORDERS WITH PASSWORD 'MS_ORDERS';
+CREATE USER ms_orders WITH PASSWORD 'ms_orders';
 
 -- Conceder privilégios ao usuário
-GRANT ALL PRIVILEGES ON DATABASE msordersdb TO MS_ORDERS;
+GRANT ALL PRIVILEGES ON DATABASE order_management_db TO ms_orders;
